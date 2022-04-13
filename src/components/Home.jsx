@@ -1,11 +1,9 @@
 import { Button, Col, Container, Row, Stack } from "react-bootstrap";
-import { Chessboard } from "react-chessboard";
+import { Board } from "./Board/Board";
 
 export function Home() {
   return (
     <>
-
-
       <Container className='p-4 mt-5 rounded-3 bg-secondary' >
         <Row>
           <Col xs={3}>
@@ -19,7 +17,7 @@ export function Home() {
             </div>
           </Col>
           <Col xs={9}>
-            <Chessboard />
+            <Board />
           </Col>
         </Row>
       </Container>
