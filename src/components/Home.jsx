@@ -13,7 +13,7 @@ export function Home() {
               <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Canviar estils</Button>
             </Stack>
           </Col>
-          <Col xs={12} md={9}>
+          <Col className="mt-3 mt-md-0" xs={12} md={9}>
             <Board />
           </Col>
         </Row>
