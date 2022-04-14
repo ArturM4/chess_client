@@ -1,13 +1,17 @@
 
 import React from 'react'
 import { Container, Nav, Navbar } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 
 export function CustomNav() {
 
   const navigate = useNavigate();
+  const location = useLocation();
   const handleNav = (path) => () => {
-    navigate(path)
+    let replace = false;
+    if (matchPath(path, location.pathname) !== null) // path es igual al actual
+      replace = true; //si es igual el reemplacem perque no s'acumuli al history
+    navigate(path, { replace })
   }
 
   return (
