@@ -1,3 +1,4 @@
+import { Chess } from 'chess.js';
 import { useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import "./Board.css"
@@ -5,6 +6,8 @@ export function Board() {
 
   //estat per controlar la mida del taulell
   const [boardWidth, setBoardWidth] = useState();
+
+  const [game, setGame] = useState(new Chess());
 
   useEffect(() => {
     function handleResize() {
@@ -18,9 +21,24 @@ export function Board() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  function onPieceDrop(from, to) {
+    const gameCopy = { ...game };
+    const move = gameCopy.move({
+      from,
+      to,
+      promotion: 'q'
+    });
+    setGame(gameCopy);
+    return move;
+  }
+
   return (
     <div className='boardWrapper'>
-      <Chessboard boardWidth={boardWidth} />
+      <Chessboard
+        boardWidth={boardWidth}
+        position={game.fen()}
+        onPieceDrop={onPieceDrop}
+      />
     </div>
   );
 }
