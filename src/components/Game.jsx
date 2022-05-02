@@ -60,6 +60,12 @@ export function Game() {
 
 
   function onPieceDrop(from, to) {
+    const isPromotion = game.moves({ verbose: true })
+      .filter((move) => move.from === from &&
+        move.to === to &&
+        move.flags.includes('p')).length > 0
+    console.log(isPromotion)
+
     let move = doMove(from, to)
     if (move)
       socket.emit('doMove', gameId, { from: move.from, to: move.to })

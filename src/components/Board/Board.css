@@ -4,4 +4,13 @@
   align-items: center;
   max-width: 80vh;
   margin: 0 auto;
+  position: relative;
+}
+
+.promotionPrompt {
+  position: absolute;
+  width: 12.5%;
+  height: 50%;
+  background-color: ;
+  z-index: 10;
 }
