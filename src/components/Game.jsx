@@ -1,5 +1,5 @@
 import { Chess } from 'chess.js';
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap';
 import { Chessboard } from 'react-chessboard';
 import { useParams } from 'react-router-dom';
@@ -32,17 +32,37 @@ export function Game() {
       setIsPlayerWhite(isWhite)
     })
 
+    return () => {
+      socket.off('gameInit')
+    }
   }, [gameId]);
 
-
-  function onPieceDrop(from, to) {
+  const doMove = useCallback((from, to) => {
     const gameCopy = { ...game };
     const move = gameCopy.move({
       from,
       to,
       promotion: 'q'
     });
-    setGame(gameCopy);
+    if (move)
+      setGame(gameCopy);
+    return move;
+  }, [game])
+
+  useEffect(() => {
+    socket.on("moveDone", ({ from, to }) => {
+      doMove(from, to)
+    })
+    return () => {
+      socket.off('moveDone')
+    }
+  }, [gameId, doMove]);
+
+
+  function onPieceDrop(from, to) {
+    let move = doMove(from, to)
+    if (move)
+      socket.emit('doMove', gameId, { from: move.from, to: move.to })
     return move;
   }
 
