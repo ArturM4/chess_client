@@ -21,6 +21,7 @@ export function usePromotion(game, setGame) {
     const gameCopy = { ...game };
     let { from, to } = promotionMove
 
+
     const move = gameCopy.move({
       from,
       to,
@@ -32,6 +33,10 @@ export function usePromotion(game, setGame) {
       setPromotionMove({})
     }
     return move;
+  }
+
+  function cancelPromotion() {
+    setPromotionMove({})
   }
 
   function isPromoting() {
@@ -48,7 +53,8 @@ export function usePromotion(game, setGame) {
     checkPromotion,
     promote,
     isPromoting,
-    getPromotionRow
+    getPromotionRow,
+    cancelPromotion
   }
 
 }

@@ -9,18 +9,22 @@ import Promotion from './Promotion';
 export function Board() {
 
   const [game, setGame] = useState(new Chess());
-  const { checkPromotion, promote, isPromoting, getPromotionRow } = usePromotion(game, setGame)
+  const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setGame)
   const { boardWidth } = useResponsiveBoard()
 
   function onPieceDrop(from, to) {
 
-    if (checkPromotion(from, to) === true)
-      return false
-
     const gameCopy = { ...game };
+
+    if (checkPromotion(from, to) === true) {
+      return false
+    }
+
+
     const move = gameCopy.move({
       from,
-      to
+      to,
+      promotion: 'q'
     });
     setGame(gameCopy);
 
@@ -34,6 +38,8 @@ export function Board() {
         boardWidth={boardWidth}
         position={game.fen()}
         onPieceDrop={onPieceDrop}
+        onSquareClick={() => cancelPromotion()}
+        onPieceDragBegin={() => cancelPromotion()}
       />
     </div>
   );
