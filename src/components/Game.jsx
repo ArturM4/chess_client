@@ -10,7 +10,7 @@ export function Game() {
 
   //estat per controlar la mida del taulell
   const [boardWidth, setBoardWidth] = useState();
-  const [isPlayerWhite, setIsPlayerWhite] = useState();
+  const [isPlayerWhite, setIsPlayerWhite] = useState(true);
   const [game, setGame] = useState(new Chess());
 
   useEffect(() => {
