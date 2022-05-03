@@ -29,7 +29,7 @@ export function Board() {
 
   return (
     <div className='boardWrapper'>
-      <Promotion promote={promote} isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} />
+      <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={promote} />
       <Chessboard
         boardWidth={boardWidth}
         position={game.fen()}

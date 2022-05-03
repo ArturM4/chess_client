@@ -3,27 +3,19 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap';
 import { Chessboard } from 'react-chessboard';
 import { useParams } from 'react-router-dom';
+import { usePromotion } from '../hooks/usePromotion';
+import { useResponsiveBoard } from '../hooks/useResponsiveBoard';
 import socket from '../socket/socket'
+import { isPieceWhite } from '../utils/chessUtils';
+import Promotion from './Board/Promotion';
 
 export function Game() {
   const gameId = useParams().id
 
-  //estat per controlar la mida del taulell
-  const [boardWidth, setBoardWidth] = useState();
   const [isPlayerWhite, setIsPlayerWhite] = useState(true);
   const [game, setGame] = useState(new Chess());
-
-  useEffect(() => {
-    function handleResize() {
-      //obté la mida del div que envolta la taula i canvia la mida de la taula per adaptar-se
-      const boardWrapper = document.getElementsByClassName('boardWrapper')[0];
-      setBoardWidth(boardWrapper.offsetWidth - 25);
-    }
-
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const { checkPromotion, promote, isPromoting, getPromotionRow } = usePromotion(game, setGame)
+  const { boardWidth } = useResponsiveBoard()
 
   useEffect(() => {
     socket.emit('joinGame', gameId)
@@ -37,21 +29,17 @@ export function Game() {
     }
   }, [gameId]);
 
-  const doMove = useCallback((from, to) => {
+  const doMove = useCallback((from, to, promotion) => {
     const gameCopy = { ...game };
-    const move = gameCopy.move({
-      from,
-      to,
-      promotion: 'q'
-    });
+    const move = gameCopy.move({ from, to, promotion });
     if (move)
       setGame(gameCopy);
     return move;
   }, [game])
 
   useEffect(() => {
-    socket.on("moveDone", ({ from, to }) => {
-      doMove(from, to)
+    socket.on("moveDone", ({ from, to, promotion }) => {
+      doMove(from, to, promotion)
     })
     return () => {
       socket.off('moveDone')
@@ -60,12 +48,8 @@ export function Game() {
 
 
   function onPieceDrop(from, to) {
-    const isPromotion = game.moves({ verbose: true })
-      .filter((move) => move.from === from &&
-        move.to === to &&
-        move.flags.includes('p')).length > 0
-    console.log(isPromotion)
-
+    if (checkPromotion(from, to) === true)
+      return false
     let move = doMove(from, to)
     if (move)
       socket.emit('doMove', gameId, { from: move.from, to: move.to })
@@ -78,21 +62,22 @@ export function Game() {
     return false
   }
 
-  function isPieceWhite(piece) {
-    if (piece.charAt(0) === 'w')
-      return true
-    return false
-  }
-
-  function boardOrientation(piece) {
+  function boardOrientation() {
     if (isPlayerWhite)
       return 'white'
     return 'black'
   }
 
+  function handlePromotion(p) {
+    const move = promote(p)
+    console.log(move)
+    if (move)
+      socket.emit('doMove', gameId, { from: move.from, to: move.to, promotion: move.promotion })
+  }
   return (
     <Container className='mt-5'>
       <div className='boardWrapper'>
+        <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={handlePromotion} />
         <Chessboard
           boardWidth={boardWidth}
           position={game.fen()}
