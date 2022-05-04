@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { usePromotion } from '../hooks/usePromotion';
 import { useResponsiveBoard } from '../hooks/useResponsiveBoard';
 import socket from '../socket/socket'
-import { isPieceWhite } from '../utils/chessUtils';
+import { getPieceFromPosition, isPieceWhite } from '../utils/chessUtils';
 import Promotion from './Board/Promotion';
 
 export function Game() {
@@ -14,7 +14,8 @@ export function Game() {
 
   const [isPlayerWhite, setIsPlayerWhite] = useState(true);
   const [game, setGame] = useState(new Chess());
-  const { checkPromotion, promote, isPromoting, getPromotionRow } = usePromotion(game, setGame)
+  const [kingInCheckSquare, setKingInCheckSquare] = useState({});
+  const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setGame, setKingInCheckSquare)
   const { boardWidth } = useResponsiveBoard()
 
   useEffect(() => {
@@ -34,6 +35,15 @@ export function Game() {
     const move = gameCopy.move({ from, to, promotion });
     if (move)
       setGame(gameCopy);
+
+    if (gameCopy.in_check())
+      setKingInCheckSquare({
+        [getPieceFromPosition(game, { type: 'k', color: game.turn() })]: {
+          boxShadow: '0 0 15px 8px rgb(153, 0, 0) inset'
+        }
+      })
+    else
+      setKingInCheckSquare({})
     return move;
   }, [game])
 
@@ -77,13 +87,16 @@ export function Game() {
   return (
     <Container className='mt-5'>
       <div className='boardWrapper'>
-        <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={handlePromotion} />
+        <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={handlePromotion} orientation={boardOrientation().charAt(0)} />
         <Chessboard
           boardWidth={boardWidth}
           position={game.fen()}
           onPieceDrop={onPieceDrop}
           isDraggablePiece={isDraggablePiece}
           boardOrientation={boardOrientation()}
+          onSquareClick={() => cancelPromotion()}
+          onPieceDragBegin={() => cancelPromotion()}
+          customSquareStyles={{ ...kingInCheckSquare }}
         />
       </div>
     </Container>

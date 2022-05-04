@@ -13,9 +13,20 @@ export function getRow(position) {
   }
 }
 
-
 export function isPieceWhite(piece) {
   if (piece.charAt(0) === 'w')
     return true
   return false
+}
+
+export function getPieceFromPosition(game, piece) {
+  return [].concat(...game.board()).map((p, index) => {
+    if (p !== null && p.type === piece.type && p.color === piece.color) {
+      return index
+    }
+  }).filter(Number.isInteger).map((piece_index) => {
+    const row = 'abcdefgh'[piece_index % 8]
+    const column = Math.ceil((64 - piece_index) / 8)
+    return row + column
+  })
 }

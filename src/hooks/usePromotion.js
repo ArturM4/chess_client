@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { getRow } from "../utils/chessUtils";
+import { getPieceFromPosition, getRow } from "../utils/chessUtils";
 
-export function usePromotion(game, setGame) {
+export function usePromotion(game, setGame, setKingInCheckSquare) {
   const [promotionMove, setPromotionMove] = useState({});
 
   function checkPromotion(from, to) {
@@ -31,6 +31,16 @@ export function usePromotion(game, setGame) {
     if (move) {
       setGame(gameCopy);
       setPromotionMove({})
+
+      if (gameCopy.in_check())
+        setKingInCheckSquare({
+          [getPieceFromPosition(game, { type: 'k', color: game.turn() })]: {
+            boxShadow: '0 0 15px 8px rgb(153, 0, 0) inset'
+          }
+        })
+      else
+        setKingInCheckSquare({})
+
     }
     return move;
   }
