@@ -40,7 +40,6 @@ export function Board() {
     else
       setKingInCheckSquare({})
 
-
     return move;
   }
 
@@ -48,7 +47,8 @@ export function Board() {
 
   return (
     <div className='boardWrapper'>
-      <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={promote} />
+
+      <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={promote} orientation={'w'} />
       <Chessboard
         boardWidth={boardWidth}
         position={game.fen()}

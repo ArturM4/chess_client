@@ -11,6 +11,10 @@
   position: absolute;
   width: 12.5%;
   height: 50%;
-  background-color: ;
   z-index: 10;
+}
+
+.resultContainer {
+  position: absolute !important;
+  z-index: 11;
 }
