@@ -20,12 +20,14 @@ export function Game() {
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
   const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setGame, setKingInCheckSquare)
   const { boardWidth } = useResponsiveBoard()
+  const [showBoard, setshowBoard] = useState(false);
 
   useEffect(() => {
     socket.emit('joinGame', gameId)
 
     socket.on("gameInit", (isWhite) => {
       setIsPlayerWhite(isWhite)
+      setshowBoard(true)
     })
 
     return () => {
@@ -107,19 +109,21 @@ export function Game() {
   return (
     <Container className='mt-5'>
       <div className='boardWrapper'>
-        <GameResult showResult={showResult} setShowResult={setShowResult} />
-        <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={handlePromotion} orientation={boardOrientation().charAt(0)} />
-        <Chessboard
-          boardWidth={boardWidth}
-          position={game.fen()}
-          onPieceDrop={onPieceDrop}
-          isDraggablePiece={isDraggablePiece}
-          boardOrientation={boardOrientation()}
-          onSquareClick={() => cancelPromotion()}
-          onPieceDragBegin={() => cancelPromotion()}
-          customSquareStyles={{ ...kingInCheckSquare }}
-          arePiecesDraggable={arePiecesDraggable}
-        />
+        {showBoard && <>
+          <GameResult showResult={showResult} setShowResult={setShowResult} />
+          <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={handlePromotion} orientation={boardOrientation().charAt(0)} />
+          <Chessboard
+            boardWidth={boardWidth}
+            position={game.fen()}
+            onPieceDrop={onPieceDrop}
+            isDraggablePiece={isDraggablePiece}
+            boardOrientation={boardOrientation()}
+            onSquareClick={() => cancelPromotion()}
+            onPieceDragBegin={() => cancelPromotion()}
+            customSquareStyles={{ ...kingInCheckSquare }}
+            arePiecesDraggable={arePiecesDraggable}
+          />
+        </>}
       </div>
     </Container >
   )

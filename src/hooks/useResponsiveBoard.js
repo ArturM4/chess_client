@@ -8,7 +8,8 @@ export function useResponsiveBoard(game, setGame) {
     function handleResize() {
       //obté la mida del div que envolta la taula i canvia la mida de la taula per adaptar-se
       const boardWrapper = document.getElementsByClassName('boardWrapper')[0];
-      setBoardWidth(boardWrapper.offsetWidth);
+      if (typeof boardWrapper !== 'undefined')
+        setBoardWidth(boardWrapper.offsetWidth);
     }
 
     window.addEventListener('resize', handleResize);
