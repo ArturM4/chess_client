@@ -129,8 +129,12 @@ export function Game() {
 
   function handlePromotion(p) {
     const move = promote(p)
-    if (move)
-      socket.emit('doMove', gameId, { from: move.from, to: move.to, promotion: move.promotion })
+    if (move) {
+      setClockON(false)
+      setYourLastMoveTime(yourTime)
+      socket.emit('doMove', gameId, { from: move.from, to: move.to, promotion: move.promotion }, yourTime)
+    }
+
   }
 
   function isDraggablePiece({ piece }) {
