@@ -23,25 +23,27 @@ export function Game() {
   const { boardWidth } = useResponsiveBoard()
   const [showBoard, setshowBoard] = useState(false);
 
-  const [whiteLastMoveTime, setWhiteLastMoveTime] = useState(180000);
-  const [blackLastMoveTime, setBlackLastMoveTime] = useState(180000);
-  const [whiteTime, setWhiteTime] = useState(180000);
-  const [blackTime, setBlackTime] = useState(180000);
+  const [yourLastMoveTime, setYourLastMoveTime] = useState(180000);
+  const [opponentLastMoveTime, setOpponentLastMoveTime] = useState(180000);
+  const [yourTime, setYourTime] = useState(180000);
+  const [opponentTime, setOpponentTime] = useState(180000);
   const [lastMoveDate, setLastMoveDate] = useState(new Date());
 
-  const [clockStarted, setClockStarted] = useState(false);
+  const [clockON, setClockON] = useState(true);
 
   useEffect(() => {
     socket.emit('joinGame', gameId)
   }, [gameId]);
 
   useInterval(() => {
-    if (game.turn() === 'w') {
-      setWhiteTime(whiteLastMoveTime - ((new Date()).getTime() - lastMoveDate.getTime()))
+    if (game.turn() === 'w' === isPlayerWhite) {
+      setYourTime(yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.getTime()))
+      setOpponentTime(opponentLastMoveTime)
     } else {
-      setBlackTime(blackLastMoveTime - ((new Date()).getTime() - lastMoveDate.getTime()))
+      setOpponentTime(opponentLastMoveTime - ((new Date()).getTime() - lastMoveDate.getTime()))
+      setYourTime(yourLastMoveTime)
     }
-  }, clockStarted ? 100 : null);
+  }, clockON ? 100 : null);
 
   useEffect(() => {
 
@@ -61,11 +63,6 @@ export function Game() {
     const move = gameCopy.move({ from, to, promotion });
     if (move) {
       setGame(gameCopy);
-      setBlackLastMoveTime(blackTime)
-      setWhiteLastMoveTime(whiteTime)
-      setLastMoveDate(new Date())
-      if (gameCopy.history().length === 2)
-        setClockStarted(true)
     }
     if (gameCopy.in_check())
       setKingInCheckSquare({
@@ -94,24 +91,39 @@ export function Game() {
     }
     return move;
 
-  }, [game, isPlayerWhite, whiteTime, blackTime])
+  }, [game, isPlayerWhite])
 
   useEffect(() => {
-    socket.on("moveDone", ({ from, to, promotion }) => {
+    socket.on("moveDone", ({ from, to, promotion }, opponentTime) => {
       doMove(from, to, promotion)
+      socket.emit('receivedMove', gameId)
+      setOpponentLastMoveTime(opponentTime)
+      setLastMoveDate(new Date())
     })
     return () => {
       socket.off('moveDone')
     }
   }, [gameId, doMove]);
 
+  useEffect(() => {
+    socket.on("oppponentReceivedMove", () => {
+      setLastMoveDate(new Date())
+      setClockON(true)
+    })
+    return () => {
+      socket.off('oppponentReceivedMove')
+    }
+  }, []);
 
   function onPieceDrop(from, to) {
     if (checkPromotion(from, to) === true)
       return false
     let move = doMove(from, to)
-    if (move)
-      socket.emit('doMove', gameId, { from: move.from, to: move.to })
+    if (move) {
+      setClockON(false)
+      setYourLastMoveTime(yourTime)
+      socket.emit('doMove', gameId, { from: move.from, to: move.to }, yourTime)
+    }
     return move;
   }
 
@@ -133,9 +145,9 @@ export function Game() {
     return 'black'
   }
 
-  function timeFormated(orientation) {
+  function timeFormated(you) {
     let time = 0
-    orientation === 'w' ? time = whiteTime : time = blackTime
+    you ? time = yourTime : time = opponentTime
 
     return Math.floor(time / (1000 * 60)).toString().padStart(2, '0') + ":"
       + (Math.floor(time / 1000) % 60).toString().padStart(2, '0') + "."
@@ -167,14 +179,10 @@ export function Game() {
           </div>
         </Col>
         <Col xs={12} md={2} lg={2}>
-          {boardOrientation() === 'white' && <>
-            <p className='fs-1 text-white'>{timeFormated('b')}</p>
-            <p className='fs-1 text-white'>{timeFormated('w')}</p>
-          </>}
-          {boardOrientation() === 'black' && <>
-            <p className='fs-1 text-white'>{timeFormated('w')}</p>
-            <p className='fs-1 text-white'>{timeFormated('b')}</p>
-          </>}
+          <>
+            <p className='fs-1 text-white'>{timeFormated(false)}</p>
+            <p className='fs-1 text-white'>{timeFormated(true)}</p>
+          </>
         </Col>
       </Row>
 
