@@ -9,6 +9,11 @@ import socket from "../socket/socket";
 export function Home() {
   const navigate = useNavigate();
   const [searchingGame, setSearchingGame] = useState(false);
+  const [showBoard, setshowBoard] = useState(false);
+
+  useEffect(() => {
+    setshowBoard(true)
+  }, []);
 
   useEffect(() => {
     socket.on("gameInit", (gameId) => {
@@ -38,7 +43,8 @@ export function Home() {
             </Stack>
           </Col>
           <Col className="mt-3 mt-md-0" xs={12} md={9}>
-            <Board />
+            {showBoard &&
+              <Board />}
           </Col>
         </Row>
       </Container>

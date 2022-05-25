@@ -189,10 +189,10 @@ export function Game() {
             </>}
           </div>
         </Col>
-        <Col xs={12} md={2} lg={2}>
+        <Col xs={12} md={2} lg={2} className='align-self-center'>
           {showBoard && <>
-            <p className='fs-1 text-white'>{timeFormated(false)}</p>
-            <p className='fs-1 text-white'>{timeFormated(true)}</p>
+            <p className='display-3 text-white'>{timeFormated(false)}</p>
+            <p className='display-3 text-white'>{timeFormated(true)}</p>
           </>}
         </Col>
       </Row>

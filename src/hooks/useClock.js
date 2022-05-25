@@ -15,7 +15,7 @@ export function useClock(initialTime, gameOver) {
       gameOver('loss')
 
     setYourTime(time)
-  }, 100);
+  }, 25);
 
   const opponentInterval = useInterval(() => {
     let time = opponentLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime())
@@ -23,7 +23,7 @@ export function useClock(initialTime, gameOver) {
       gameOver('win')
 
     setOpponentTime(time)
-  }, 100);
+  }, 25);
 
   const yourTimer = {
     start: () => {
