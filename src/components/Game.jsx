@@ -1,15 +1,15 @@
 import { Chess } from 'chess.js';
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap';
 import { Chessboard } from 'react-chessboard';
 import { useParams } from 'react-router-dom';
 import { usePromotion } from '../hooks/usePromotion';
-import { useInterval } from '../hooks/useInterval';
 import { useResponsiveBoard } from '../hooks/useResponsiveBoard';
 import socket from '../socket/socket'
 import { getPieceFromPosition, isPieceWhite } from '../utils/chessUtils';
 import Promotion from './Board/Promotion';
 import GameResult from './GameResult';
+import { useClock } from '../hooks/useClock';
 
 export function Game() {
   const gameId = useParams().id
@@ -23,40 +23,11 @@ export function Game() {
   const { boardWidth } = useResponsiveBoard()
   const [showBoard, setshowBoard] = useState(false);
 
-  const [yourLastMoveTime, setYourLastMoveTime] = useState(20000);
-  const [opponentLastMoveTime, setOpponentLastMoveTime] = useState(20000);
-  const [yourTime, setYourTime] = useState(20000);
-  const [opponentTime, setOpponentTime] = useState(20000);
-  const lastMoveDate = useRef();
+  const { yourTimer, opponentTimer, yourTime, opponentTime, getYourCurrentTime, stopAllTimers } = useClock(20000, gameOver)
 
   useEffect(() => {
     socket.emit('joinGame', gameId)
   }, [gameId]);
-
-
-  const yourTimer = useInterval(() => {
-
-    console.log('you', lastMoveDate.current.getTime(), yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime()), new Date().getTime())
-    let time = yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime())
-    if (time <= 0) {
-      console.log("loss", yourTime, opponentTime, yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime()))
-      gameOver('loss')
-    }
-    setYourTime(time)
-
-  }, 100);
-
-  const opponentTimer = useInterval(() => {
-
-    console.log('opp', lastMoveDate.current.getTime())
-    let time = opponentLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime())
-    if (time <= -1000) {
-      console.log("win", yourTime, opponentTime, opponentLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime()))
-      gameOver('win')
-    }
-    setOpponentTime(time)
-
-  }, 100);
 
 
   useEffect(() => {
@@ -64,7 +35,6 @@ export function Game() {
     socket.on("gameInit", (isWhite) => {
       setIsPlayerWhite(isWhite)
       setshowBoard(true)
-      lastMoveDate.current = new Date()
       if (isWhite)
         yourTimer.start()
       else
@@ -95,57 +65,44 @@ export function Game() {
     if (gameCopy.game_over()) {
       setArePiecesDraggable(false)
       if (gameCopy.in_checkmate()) {
-        if (gameCopy.turn() === 'w' === isPlayerWhite) {
+        if (gameCopy.turn() === 'w' === isPlayerWhite)
           setShowResult('loss')
-        }
-        else {
+        else
           setShowResult('win')
-        }
       }
 
-      if (gameCopy.in_draw()) {
+      if (gameCopy.in_draw())
         setShowResult('draw')
-      }
 
     }
     return move;
-
   }, [game, isPlayerWhite])
 
   useEffect(() => {
     socket.on("moveDone", ({ from, to, promotion }, oppTime) => {
-      console.log("moveDone", yourTime, opponentTime, oppTime)
-
-      opponentTimer.stop()
-      setOpponentLastMoveTime(oppTime)
-      setOpponentTime(oppTime)
-      lastMoveDate.current = new Date()
+      opponentTimer.stop(oppTime)
       yourTimer.start()
-
       doMove(from, to, promotion)
       socket.emit('receivedMove', gameId)
     })
     return () => {
       socket.off('moveDone')
     }
-  }, [gameId, doMove, yourTime, opponentTime, yourTimer, opponentTimer]);
+  }, [gameId, doMove, yourTimer, opponentTimer]);
 
 
   useEffect(() => {
     socket.on("oppponentReceivedMove", () => {
-      console.log("oppponentReceivedMove", yourTime, opponentTime)
-      lastMoveDate.current = new Date()
       opponentTimer.start()
     })
 
     return () => {
       socket.off('oppponentReceivedMove')
     }
-  }, [yourTime, opponentTime, opponentTimer]);
+  }, [opponentTimer]);
 
   function onPieceDrop(from, to) {
-    let currentYourTime = yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime())
-    console.log("onPieceDrop", yourTime, opponentTime, new Date().getTime(), yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime()))
+    let currentYourTime = getYourCurrentTime()
 
     if (currentYourTime <= 0) {
       gameOver('loss')
@@ -156,9 +113,7 @@ export function Game() {
     let move = doMove(from, to)
     if (move) {
 
-      yourTimer.stop()
-      setYourLastMoveTime(currentYourTime)
-      setYourTime(currentYourTime)
+      yourTimer.stop(currentYourTime)
       socket.emit('doMove', gameId, { from: move.from, to: move.to }, currentYourTime)
       return true
 
@@ -167,11 +122,16 @@ export function Game() {
   }
 
   function handlePromotion(p) {
+    let currentYourTime = getYourCurrentTime()
+    if (currentYourTime <= 0) {
+      gameOver('loss')
+      return
+    }
+
     const move = promote(p)
     if (move) {
-      yourTimer.stop()
-      setYourLastMoveTime(yourTime)
-      socket.emit('doMove', gameId, { from: move.from, to: move.to, promotion: move.promotion }, yourTime)
+      yourTimer.stop(currentYourTime)
+      socket.emit('doMove', gameId, { from: move.from, to: move.to, promotion: move.promotion }, currentYourTime)
     }
 
   }
@@ -200,8 +160,7 @@ export function Game() {
   }
 
   function gameOver(result) {
-    yourTimer.stop()
-    opponentTimer.stop()
+    stopAllTimers()
     setArePiecesDraggable(false)
     setShowResult(result)
   }
@@ -231,10 +190,10 @@ export function Game() {
           </div>
         </Col>
         <Col xs={12} md={2} lg={2}>
-          <>
+          {showBoard && <>
             <p className='fs-1 text-white'>{timeFormated(false)}</p>
             <p className='fs-1 text-white'>{timeFormated(true)}</p>
-          </>
+          </>}
         </Col>
       </Row>
 
