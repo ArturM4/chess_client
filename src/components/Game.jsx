@@ -1,10 +1,10 @@
 import { Chess } from 'chess.js';
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap';
 import { Chessboard } from 'react-chessboard';
 import { useParams } from 'react-router-dom';
-import { useInterval } from '../hooks/useInterval';
 import { usePromotion } from '../hooks/usePromotion';
+import { useInterval } from '../hooks/useInterval';
 import { useResponsiveBoard } from '../hooks/useResponsiveBoard';
 import socket from '../socket/socket'
 import { getPieceFromPosition, isPieceWhite } from '../utils/chessUtils';
@@ -23,39 +23,58 @@ export function Game() {
   const { boardWidth } = useResponsiveBoard()
   const [showBoard, setshowBoard] = useState(false);
 
-  const [yourLastMoveTime, setYourLastMoveTime] = useState(180000);
-  const [opponentLastMoveTime, setOpponentLastMoveTime] = useState(180000);
-  const [yourTime, setYourTime] = useState(180000);
-  const [opponentTime, setOpponentTime] = useState(180000);
-  const [lastMoveDate, setLastMoveDate] = useState(new Date());
-
-  const [clockON, setClockON] = useState(true);
+  const [yourLastMoveTime, setYourLastMoveTime] = useState(20000);
+  const [opponentLastMoveTime, setOpponentLastMoveTime] = useState(20000);
+  const [yourTime, setYourTime] = useState(20000);
+  const [opponentTime, setOpponentTime] = useState(20000);
+  const lastMoveDate = useRef();
 
   useEffect(() => {
     socket.emit('joinGame', gameId)
   }, [gameId]);
 
-  useInterval(() => {
-    if (game.turn() === 'w' === isPlayerWhite) {
-      setYourTime(yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.getTime()))
-      setOpponentTime(opponentLastMoveTime)
-    } else {
-      setOpponentTime(opponentLastMoveTime - ((new Date()).getTime() - lastMoveDate.getTime()))
-      setYourTime(yourLastMoveTime)
+
+  const yourTimer = useInterval(() => {
+
+    console.log('you', lastMoveDate.current.getTime(), yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime()), new Date().getTime())
+    let time = yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime())
+    if (time <= 0) {
+      console.log("loss", yourTime, opponentTime, yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime()))
+      gameOver('loss')
     }
-  }, clockON ? 100 : null);
+    setYourTime(time)
+
+  }, 100);
+
+  const opponentTimer = useInterval(() => {
+
+    console.log('opp', lastMoveDate.current.getTime())
+    let time = opponentLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime())
+    if (time <= -1000) {
+      console.log("win", yourTime, opponentTime, opponentLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime()))
+      gameOver('win')
+    }
+    setOpponentTime(time)
+
+  }, 100);
+
 
   useEffect(() => {
 
     socket.on("gameInit", (isWhite) => {
       setIsPlayerWhite(isWhite)
       setshowBoard(true)
+      lastMoveDate.current = new Date()
+      if (isWhite)
+        yourTimer.start()
+      else
+        opponentTimer.start()
     })
 
     return () => {
       socket.off('gameInit')
     }
-  }, [isPlayerWhite]);
+  }, [isPlayerWhite, yourTimer, opponentTimer]);
 
 
   const doMove = useCallback((from, to, promotion) => {
@@ -94,43 +113,63 @@ export function Game() {
   }, [game, isPlayerWhite])
 
   useEffect(() => {
-    socket.on("moveDone", ({ from, to, promotion }, opponentTime) => {
+    socket.on("moveDone", ({ from, to, promotion }, oppTime) => {
+      console.log("moveDone", yourTime, opponentTime, oppTime)
+
+      opponentTimer.stop()
+      setOpponentLastMoveTime(oppTime)
+      setOpponentTime(oppTime)
+      lastMoveDate.current = new Date()
+      yourTimer.start()
+
       doMove(from, to, promotion)
       socket.emit('receivedMove', gameId)
-      setOpponentLastMoveTime(opponentTime)
-      setLastMoveDate(new Date())
     })
     return () => {
       socket.off('moveDone')
     }
-  }, [gameId, doMove]);
+  }, [gameId, doMove, yourTime, opponentTime, yourTimer, opponentTimer]);
+
 
   useEffect(() => {
     socket.on("oppponentReceivedMove", () => {
-      setLastMoveDate(new Date())
-      setClockON(true)
+      console.log("oppponentReceivedMove", yourTime, opponentTime)
+      lastMoveDate.current = new Date()
+      opponentTimer.start()
     })
+
     return () => {
       socket.off('oppponentReceivedMove')
     }
-  }, []);
+  }, [yourTime, opponentTime, opponentTimer]);
 
   function onPieceDrop(from, to) {
+    let currentYourTime = yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime())
+    console.log("onPieceDrop", yourTime, opponentTime, new Date().getTime(), yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime()))
+
+    if (currentYourTime <= 0) {
+      gameOver('loss')
+      return
+    }
     if (checkPromotion(from, to) === true)
       return false
     let move = doMove(from, to)
     if (move) {
-      setClockON(false)
-      setYourLastMoveTime(yourTime)
-      socket.emit('doMove', gameId, { from: move.from, to: move.to }, yourTime)
+
+      yourTimer.stop()
+      setYourLastMoveTime(currentYourTime)
+      setYourTime(currentYourTime)
+      socket.emit('doMove', gameId, { from: move.from, to: move.to }, currentYourTime)
+      return true
+
     }
-    return move;
+    return false;
   }
 
   function handlePromotion(p) {
     const move = promote(p)
     if (move) {
-      setClockON(false)
+      yourTimer.stop()
       setYourLastMoveTime(yourTime)
       socket.emit('doMove', gameId, { from: move.from, to: move.to, promotion: move.promotion }, yourTime)
     }
@@ -152,10 +191,19 @@ export function Game() {
   function timeFormated(you) {
     let time = 0
     you ? time = yourTime : time = opponentTime
+    if (time < 0)
+      time = 0
 
     return Math.floor(time / (1000 * 60)).toString().padStart(2, '0') + ":"
       + (Math.floor(time / 1000) % 60).toString().padStart(2, '0') + "."
       + Math.floor(time % 1000 / 100)
+  }
+
+  function gameOver(result) {
+    yourTimer.stop()
+    opponentTimer.stop()
+    setArePiecesDraggable(false)
+    setShowResult(result)
   }
 
   return (
