@@ -1,4 +1,4 @@
-import { Button, Col, Container, Row, Stack } from "react-bootstrap";
+import { Button, Col, Container, Modal, Row, Stack } from "react-bootstrap";
 import { Board } from "./Board/Board";
 import '../mainstyles.css'
 import { useNavigate } from "react-router-dom";
@@ -10,10 +10,15 @@ export function Home() {
   const navigate = useNavigate();
   const [searchingGame, setSearchingGame] = useState(false);
   const [showBoard, setshowBoard] = useState(false);
+  const [chooseModeModal, setChooseModeModal] = useState(false);
 
   useEffect(() => {
     setshowBoard(true)
+    return () => {
+      socket.emit('cancelSearch')
+    }
   }, []);
+
 
   useEffect(() => {
     socket.on("gameInit", (gameId) => {
@@ -24,9 +29,13 @@ export function Home() {
     }
   }, [navigate]);
 
-  function handleSearchGame() {
+  function handleChooseMode() {
+    setChooseModeModal(true)
+  }
+  function handleSearchGame(mode) {
+    setChooseModeModal(false)
     setSearchingGame(true)
-    socket.emit('searchGame')
+    socket.emit('searchGame', mode)
   }
 
   return (
@@ -36,7 +45,7 @@ export function Home() {
           <Col xs={12} md={3}>
             <Stack className="mx-auto">
               <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Un Jugador</Button>
-              <Button disabled={searchingGame} onClick={handleSearchGame} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant='' >Multijugador</Button>
+              <Button disabled={searchingGame} onClick={handleChooseMode} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant='' >Multijugador</Button>
               {searchingGame && <p className='ms-md-2 mb-2 mb-md-4 fs-5 text-white'>Buscant partida...</p>}
               <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant='' onClick={() => navigate('challenge')}>Desafiar un amic</Button>
               <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Canviar estils</Button>
@@ -48,6 +57,21 @@ export function Home() {
           </Col>
         </Row>
       </Container>
+
+      <Modal show={chooseModeModal} onHide={() => setChooseModeModal(false)} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Tria el mode de joc</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Button onClick={() => handleSearchGame('bullet')} size='lg' className='me-2 mb-2 py-3' >Bullet (1min)</Button>
+          <Button onClick={() => handleSearchGame('blitz')} size='lg' className='me-2 mb-2 py-3' >Blitz (3min)</Button>
+          <Button onClick={() => handleSearchGame('rapid')} size='lg' className='me-2 mb-2 py-3' >Rapid (10min)</Button>
+          <Button onClick={() => handleSearchGame('classic')} size='lg' className='mb-2 py-3'  >Classic (30min)</Button>
+
+        </Modal.Body>
+        <Modal.Footer>
+        </Modal.Footer>
+      </Modal>
     </>
   )
 }

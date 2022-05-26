@@ -30,3 +30,13 @@ export function getPieceFromPosition(game, piece) {
     return row + column
   })
 }
+
+export function getTimeFromMode(mode) {
+  switch (mode) {
+    case 'bullet': return 60000
+    case 'blitz': return 180000
+    case 'rapid': return 600000
+    case 'classic': return 1800000
+    default: return 180000
+  }
+}

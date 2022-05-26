@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
 import { useInterval } from "./useInterval";
 
-export function useClock(initialTime, gameOver) {
+export function useClock(gameOver) {
 
-  const [yourLastMoveTime, setYourLastMoveTime] = useState(initialTime);
-  const [opponentLastMoveTime, setOpponentLastMoveTime] = useState(initialTime);
-  const [yourTime, setYourTime] = useState(initialTime);
-  const [opponentTime, setOpponentTime] = useState(initialTime);
+  const [yourLastMoveTime, setYourLastMoveTime] = useState(0);
+  const [opponentLastMoveTime, setOpponentLastMoveTime] = useState(0);
+  const [yourTime, setYourTime] = useState(0);
+  const [opponentTime, setOpponentTime] = useState(0);
   const lastMoveDate = useRef();
 
   const yourInterval = useInterval(() => {
@@ -58,13 +58,21 @@ export function useClock(initialTime, gameOver) {
     opponentInterval.stop()
   }
 
+  function setTime(timeToSet) {
+    setYourLastMoveTime(timeToSet)
+    setYourTime(timeToSet)
+    setOpponentLastMoveTime(timeToSet)
+    setOpponentTime(timeToSet)
+  }
+
   return {
     yourTimer,
     opponentTimer,
     yourTime,
     opponentTime,
     getYourCurrentTime,
-    stopAllTimers
+    stopAllTimers,
+    setTime
   }
 
 }

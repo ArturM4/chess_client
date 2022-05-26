@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { usePromotion } from '../hooks/usePromotion';
 import { useResponsiveBoard } from '../hooks/useResponsiveBoard';
 import socket from '../socket/socket'
-import { getPieceFromPosition, isPieceWhite } from '../utils/chessUtils';
+import { getPieceFromPosition, getTimeFromMode, isPieceWhite } from '../utils/chessUtils';
 import Promotion from './Board/Promotion';
 import GameResult from './GameResult';
 import { useClock } from '../hooks/useClock';
@@ -23,7 +23,7 @@ export function Game() {
   const { boardWidth } = useResponsiveBoard()
   const [showBoard, setshowBoard] = useState(false);
 
-  const { yourTimer, opponentTimer, yourTime, opponentTime, getYourCurrentTime, stopAllTimers } = useClock(20000, gameOver)
+  const { yourTimer, opponentTimer, yourTime, opponentTime, getYourCurrentTime, stopAllTimers, setTime } = useClock(gameOver)
 
   useEffect(() => {
     socket.emit('joinGame', gameId)
@@ -32,9 +32,10 @@ export function Game() {
 
   useEffect(() => {
 
-    socket.on("gameInit", (isWhite) => {
+    socket.on("gameInit", (isWhite, mode) => {
       setIsPlayerWhite(isWhite)
       setshowBoard(true)
+      setTime(getTimeFromMode(mode))
       if (isWhite)
         yourTimer.start()
       else
@@ -44,7 +45,7 @@ export function Game() {
     return () => {
       socket.off('gameInit')
     }
-  }, [isPlayerWhite, yourTimer, opponentTimer]);
+  }, [isPlayerWhite, yourTimer, opponentTimer, setTime]);
 
 
   const doMove = useCallback((from, to, promotion) => {
