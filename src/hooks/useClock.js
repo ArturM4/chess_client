@@ -11,16 +11,22 @@ export function useClock(gameOver) {
 
   const yourInterval = useInterval(() => {
     let time = yourLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime())
-    if (time <= 0)
+    if (time <= 0) {
       gameOver('loss')
+      stopAllTimers()
+    }
+
 
     setYourTime(time)
   }, 25);
 
   const opponentInterval = useInterval(() => {
     let time = opponentLastMoveTime - ((new Date()).getTime() - lastMoveDate.current.getTime())
-    if (time <= -1000)
+    if (time <= -1000) {
       gameOver('win')
+      stopAllTimers()
+    }
+
 
     setOpponentTime(time)
   }, 25);
@@ -71,8 +77,8 @@ export function useClock(gameOver) {
     yourTime,
     opponentTime,
     getYourCurrentTime,
-    stopAllTimers,
-    setTime
+    setTime,
+    stopAllTimers
   }
 
 }

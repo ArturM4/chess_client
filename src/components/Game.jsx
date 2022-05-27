@@ -19,16 +19,58 @@ export function Game() {
   const [showResult, setShowResult] = useState('');
   const [arePiecesDraggable, setArePiecesDraggable] = useState(true);
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
-  const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setGame, setKingInCheckSquare)
   const { boardWidth } = useResponsiveBoard()
   const [showBoard, setshowBoard] = useState(false);
 
-  const { yourTimer, opponentTimer, yourTime, opponentTime, getYourCurrentTime, stopAllTimers, setTime } = useClock(gameOver)
+
+
+
+  const gameOver = useCallback((result) => {
+    setArePiecesDraggable(false)
+    setShowResult(result)
+  }, [])
+
+  const { yourTimer, opponentTimer, yourTime, opponentTime, getYourCurrentTime, setTime, stopAllTimers } = useClock(gameOver)
+
+
+  const doMove = useCallback((from, to, promotion) => {
+    const gameCopy = { ...game };
+    const move = gameCopy.move({ from, to, promotion });
+    if (move) {
+      setGame(gameCopy);
+
+      if (gameCopy.in_check())
+        setKingInCheckSquare({
+          [getPieceFromPosition(game, { type: 'k', color: game.turn() })]: {
+            boxShadow: '0 0 15px 8px rgb(153, 0, 0) inset'
+          }
+        })
+      else
+        setKingInCheckSquare({})
+
+      if (gameCopy.game_over()) {
+        stopAllTimers()
+        move.gameOver = true
+        if (gameCopy.in_checkmate()) {
+          if (gameCopy.turn() === 'w' === isPlayerWhite)
+            gameOver('loss')
+          else
+            gameOver('win')
+        }
+
+        if (gameCopy.in_draw())
+          gameOver('draw')
+
+      }
+    }
+    return move;
+  }, [game, isPlayerWhite, gameOver, stopAllTimers])
+
+  const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setKingInCheckSquare, doMove)
 
   useEffect(() => {
     socket.emit('joinGame', gameId)
   }, [gameId]);
-
 
   useEffect(() => {
 
@@ -36,6 +78,7 @@ export function Game() {
       setIsPlayerWhite(isWhite)
       setshowBoard(true)
       setTime(getTimeFromMode(mode))
+
       if (isWhite)
         yourTimer.start()
       else
@@ -47,44 +90,13 @@ export function Game() {
     }
   }, [isPlayerWhite, yourTimer, opponentTimer, setTime]);
 
-
-  const doMove = useCallback((from, to, promotion) => {
-    const gameCopy = { ...game };
-    const move = gameCopy.move({ from, to, promotion });
-    if (move) {
-      setGame(gameCopy);
-    }
-    if (gameCopy.in_check())
-      setKingInCheckSquare({
-        [getPieceFromPosition(game, { type: 'k', color: game.turn() })]: {
-          boxShadow: '0 0 15px 8px rgb(153, 0, 0) inset'
-        }
-      })
-    else
-      setKingInCheckSquare({})
-
-    if (gameCopy.game_over()) {
-      setArePiecesDraggable(false)
-      if (gameCopy.in_checkmate()) {
-        if (gameCopy.turn() === 'w' === isPlayerWhite)
-          setShowResult('loss')
-        else
-          setShowResult('win')
-      }
-
-      if (gameCopy.in_draw())
-        setShowResult('draw')
-
-    }
-    return move;
-  }, [game, isPlayerWhite])
-
   useEffect(() => {
     socket.on("moveDone", ({ from, to, promotion }, oppTime) => {
       opponentTimer.stop(oppTime)
       yourTimer.start()
-      doMove(from, to, promotion)
-      socket.emit('receivedMove', gameId)
+      let move = doMove(from, to, promotion)
+      if (!move.gameOver)
+        socket.emit('receivedMove', gameId)
     })
     return () => {
       socket.off('moveDone')
@@ -160,11 +172,7 @@ export function Game() {
       + Math.floor(time % 1000 / 100)
   }
 
-  function gameOver(result) {
-    stopAllTimers()
-    setArePiecesDraggable(false)
-    setShowResult(result)
-  }
+
 
   return (
     <Container className='mt-5'>
