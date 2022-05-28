@@ -1,26 +1,62 @@
-import { useEffect, useState } from 'react';
+import { Chess } from 'chess.js';
+import { useState } from 'react';
 import { Chessboard } from 'react-chessboard';
+import { usePromotion } from '../../hooks/usePromotion';
+import { useResponsiveBoard } from '../../hooks/useResponsiveBoard';
+import { getPieceFromPosition } from '../../utils/chessUtils';
 import "./Board.css"
+import Promotion from './Promotion';
+
 export function Board() {
 
-  //estat per controlar la mida del taulell
-  const [boardWidth, setBoardWidth] = useState();
+  const [game, setGame] = useState(new Chess());
+  const [kingInCheckSquare, setKingInCheckSquare] = useState({});
+  const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setGame, setKingInCheckSquare)
+  const { boardWidth } = useResponsiveBoard()
 
-  useEffect(() => {
-    function handleResize() {
-      //obté la mida del div que envolta la taula i canvia la mida de la taula per adaptar-se
-      const boardWrapper = document.getElementsByClassName('boardWrapper')[0];
-      setBoardWidth(boardWrapper.offsetWidth - 25);
+
+
+  function onPieceDrop(from, to) {
+
+    const gameCopy = { ...game };
+
+    if (checkPromotion(from, to) === true) {
+      return false
     }
 
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    const move = gameCopy.move({
+      from,
+      to,
+      promotion: 'q'
+    });
+    setGame(gameCopy);
+
+    if (gameCopy.in_check())
+      setKingInCheckSquare({
+        [getPieceFromPosition(game, { type: 'k', color: game.turn() })]: {
+          boxShadow: '0 0 15px 8px rgb(153, 0, 0) inset'
+        }
+      })
+    else
+      setKingInCheckSquare({})
+
+    return move;
+  }
+
+
 
   return (
     <div className='boardWrapper'>
-      <Chessboard boardWidth={boardWidth} />
+
+      <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={promote} orientation={'w'} />
+      <Chessboard
+        boardWidth={boardWidth}
+        position={game.fen()}
+        onPieceDrop={onPieceDrop}
+        onSquareClick={() => cancelPromotion()}
+        onPieceDragBegin={() => cancelPromotion()}
+        customSquareStyles={{ ...kingInCheckSquare }}
+      />
     </div>
   );
 }
