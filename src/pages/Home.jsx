@@ -1,5 +1,5 @@
 import { Button, Col, Container, Modal, Row, Stack } from "react-bootstrap";
-import { Board } from "./Board/Board";
+import { Board } from "../components/Board/Board";
 import '../mainstyles.css'
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
