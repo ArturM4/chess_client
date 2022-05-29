@@ -7,8 +7,8 @@ import { usePromotion } from '../hooks/usePromotion';
 import { useResponsiveBoard } from '../hooks/useResponsiveBoard';
 import socket from '../socket/socket'
 import { getPieceFromPosition, getTimeFromMode, isPieceWhite } from '../utils/chessUtils';
-import Promotion from './Board/Promotion';
-import GameResult from './GameResult';
+import Promotion from '../components/Board/Promotion';
+import GameResult from '../components/GameResult';
 import { useClock } from '../hooks/useClock';
 
 export function Game() {
