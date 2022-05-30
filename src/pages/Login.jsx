@@ -3,6 +3,7 @@ import { Button, Form } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/login';
 import { ErrorMessage } from '../components/ErrorMessage';
+import socket from '../socket/socket';
 
 
 export function Login({ setUser }) {
@@ -19,6 +20,7 @@ export function Login({ setUser }) {
 
     try {
       const user = await login({ username, password })
+      socket.emit("userLogged", user.info.id)
       setUser(user)
       navigate('/')
     } catch (error) {

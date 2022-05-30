@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { login } from '../services/login';
 import { register } from '../services/users';
+import socket from '../socket/socket';
 
 export function Register({ setUser }) {
   const [errorMsg, setErrorMsg] = useState(null);
@@ -20,6 +21,7 @@ export function Register({ setUser }) {
     try {
       await register({ username, password })
       const user = await login({ username, password })
+      socket.emit("userLogged", user.info.id)
       setUser(user)
       navigate('/')
     } catch (error) {

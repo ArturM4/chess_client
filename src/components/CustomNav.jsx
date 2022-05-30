@@ -2,6 +2,7 @@
 import React from 'react'
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import socket from '../socket/socket';
 
 export function CustomNav({ user, setUser }) {
 
@@ -15,7 +16,9 @@ export function CustomNav({ user, setUser }) {
   }
 
   const handleLogout = () => {
+    socket.emit("userLogout", user.info.id)
     setUser(null)
+    navigate('/')
   }
 
   return (
@@ -26,15 +29,18 @@ export function CustomNav({ user, setUser }) {
         <Navbar.Collapse id="responsive-navbar-nav" >
           <Nav className="me-auto">
             <Nav.Link onClick={handleNav('game')}>Jugar</Nav.Link>
+            {user && <Nav.Link onClick={handleNav('friends')}>Amics</Nav.Link>}
           </Nav>
           <Nav>
-            {!user ?
-              <>
+            {!user
+              ? <>
                 <Nav.Link onClick={handleNav('login')}>Iniciar sessió</Nav.Link>
                 <Nav.Link onClick={handleNav('register')}>Registrar-se</Nav.Link>
               </>
-              :
-              <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+              : <>
+                <Nav.Link onClick={handleLogout}>Tancar sessió</Nav.Link>
+                <Navbar.Text>| {user.info.username}</Navbar.Text>
+              </>
             }
           </Nav>
         </Navbar.Collapse>

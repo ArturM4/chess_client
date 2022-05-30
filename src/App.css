@@ -6,7 +6,18 @@
 }
 
 .smallContainer {
-  width: 450px;
+  max-width: 450px;
   margin: auto;
   background-color: #2f2f2f;
+}
+
+.mediumContainer {
+  max-width: 800px;
+  margin: auto;
+  overflow-wrap: break-word;
+}
+
+.dark {
+  color: #fff !important;
+  background-color: #2f2f2f !important
 }
