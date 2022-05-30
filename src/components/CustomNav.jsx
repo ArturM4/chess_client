@@ -50,6 +50,10 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
           </Nav>
           <Nav>
             <NavDropdown disabled={!notifications.length > 0} title={'🔔' + notifications.length}>
+              {notifications.length === 0 &&
+                <NavDropdown.ItemText>
+                  <div>No tens cap notificació</div>
+                </NavDropdown.ItemText>}
               {notifications.map((noti, i) => {
                 return (
                   <div key={i}>
