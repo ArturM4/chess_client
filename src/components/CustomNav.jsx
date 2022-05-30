@@ -1,10 +1,11 @@
 
 import React from 'react'
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import { Button, Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import { acceptFriend } from '../services/users';
 import socket from '../socket/socket';
 
-export function CustomNav({ user, setUser }) {
+export function CustomNav({ user, setUser, notifications, setNotifications }) {
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,6 +22,22 @@ export function CustomNav({ user, setUser }) {
     navigate('/')
   }
 
+  const acceptFriendRequest = async (index, noti) => {
+    await acceptFriend(noti)
+    setNotifications((prev) => {
+      let prevCopy = [...prev]
+      prevCopy.splice(index, 1);
+      return prevCopy
+    })
+  }
+
+  const declineFriendRequest = (index) => {
+    setNotifications((prev) => {
+      let prevCopy = [...prev]
+      prevCopy.splice(index, 1);
+      return prevCopy
+    })
+  }
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Container>
@@ -32,6 +49,21 @@ export function CustomNav({ user, setUser }) {
             {user && <Nav.Link onClick={handleNav('friends')}>Amics</Nav.Link>}
           </Nav>
           <Nav>
+            <NavDropdown disabled={!notifications.length > 0} title={'🔔' + notifications.length}>
+              {notifications.map((noti, i) => {
+                return (
+                  <div key={i}>
+                    <NavDropdown.Divider />
+                    <NavDropdown.ItemText>
+                      <div>{noti.senderUsername} vol ser el teu amic</div>
+                      <Button onClick={() => acceptFriendRequest(i, noti)} variant="success">Acceptar</Button>{' '}
+                      <Button onClick={() => declineFriendRequest(i)} variant="danger">Rebutjar</Button>
+                    </NavDropdown.ItemText>
+                  </div>
+                )
+              })}
+              <div className='text-white'>________________________________________</div>
+            </NavDropdown>
             {!user
               ? <>
                 <Nav.Link onClick={handleNav('login')}>Iniciar sessió</Nav.Link>
@@ -45,7 +77,7 @@ export function CustomNav({ user, setUser }) {
           </Nav>
         </Navbar.Collapse>
       </Container>
-    </Navbar>
+    </Navbar >
   )
 }
 

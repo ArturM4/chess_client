@@ -12,11 +12,11 @@ import socket from './socket/socket';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     socket.on("friendRequest", (request) => {
-      console.log('friend request', request)
-      alert(`${request.senderUsername} t'ha enviat una sol·licitud d'amistat`)
+      setNotifications((prev) => [...prev, request])
     })
 
     return () => {
@@ -26,7 +26,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <CustomNav user={user} setUser={setUser} />
+      <CustomNav user={user} setUser={setUser} notifications={notifications} setNotifications={setNotifications} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/game/:id" element={<Game />} />

@@ -1,11 +1,13 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Form, ListGroup, Modal } from 'react-bootstrap'
+import { getUser } from '../services/users'
 import socket from '../socket/socket'
 
 export function Friends({ user }) {
   const [addFriendModal, setAddFriendModal] = useState(false)
   const [friendUsername, setFriendUsername] = useState('')
+  const [friends, setFriends] = useState([])
 
   const handleAddFriend = (e) => {
     e.preventDefault()
@@ -13,6 +15,13 @@ export function Friends({ user }) {
     setFriendUsername('')
     socket.emit("friendRequest", friendUsername, user.info.id, user.info.username)
   }
+
+  useEffect(() => {
+    getUser(user.info.id).then((result) => {
+      setFriends(result.friends)
+    })
+  }, [user.info.id])
+
   return (
     <>
       {user && <>
@@ -20,20 +29,13 @@ export function Friends({ user }) {
           <Button onClick={() => setAddFriendModal(true)} className='mb-3 float-right'>Afegir nou amic </Button>
 
           <ListGroup>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
-            <ListGroup.Item className='dark'>Pablo</ListGroup.Item>
+            <ListGroup.Item style={{ backgroundColor: '#0b0b0c', color: '#fff' }}>Amics</ListGroup.Item>
+
+            {friends.map((friend, i) => {
+              return (
+                <ListGroup.Item key={i} className='dark'>{friend.username}</ListGroup.Item>
+              )
+            })}
           </ListGroup>
         </div>
 
