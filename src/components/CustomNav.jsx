@@ -23,7 +23,11 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
   }
 
   const acceptFriendRequest = async (index, noti) => {
-    await acceptFriend(noti)
+    if (noti.type === 'friendRequest')
+      await acceptFriend(noti)
+    else if (noti.type === 'challenge')
+      socket.emit("createGame", noti.senderId, noti.receiverId)
+
     setNotifications((prev) => {
       let prevCopy = [...prev]
       prevCopy.splice(index, 1);
@@ -59,7 +63,10 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
                   <div key={i}>
                     <NavDropdown.Divider />
                     <NavDropdown.ItemText>
-                      <div>{noti.senderUsername} vol ser el teu amic</div>
+                      {noti.type === 'friendRequest'
+                        ? <div>{noti.senderUsername} vol ser el teu amic</div>
+                        : <div>{noti.senderUsername} t'ha desafiat</div>
+                      }
                       <Button onClick={() => acceptFriendRequest(i, noti)} variant="success">Acceptar</Button>{' '}
                       <Button onClick={() => declineFriendRequest(i)} variant="danger">Rebutjar</Button>
                     </NavDropdown.ItemText>
@@ -75,7 +82,7 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
               </>
               : <>
                 <Nav.Link onClick={handleLogout}>Tancar sessió</Nav.Link>
-                <Navbar.Text>| {user.info.username}</Navbar.Text>
+                <Navbar.Text> {user.info.username}</Navbar.Text>
               </>
             }
           </Nav>

@@ -22,6 +22,9 @@ export function Friends({ user }) {
     })
   }, [user.info.id])
 
+  const challengeFriend = (friendId) => {
+    socket.emit("challengeFriend", friendId, user.info.id, user.info.username)
+  }
   return (
     <>
       {user && <>
@@ -30,10 +33,9 @@ export function Friends({ user }) {
 
           <ListGroup>
             <ListGroup.Item style={{ backgroundColor: '#0b0b0c', color: '#fff' }}>Amics</ListGroup.Item>
-
             {friends.map((friend, i) => {
               return (
-                <ListGroup.Item key={i} className='dark'>{friend.username}</ListGroup.Item>
+                <ListGroup.Item key={i} className='dark'>{friend.username}<Button onClick={() => challengeFriend(friend.id)} variant='secondary' className='ms-3' size='sm'>Desafiar</Button></ListGroup.Item>
               )
             })}
           </ListGroup>
