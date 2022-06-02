@@ -1,5 +1,5 @@
 import { Chess } from 'chess.js';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { usePromotion } from '../../hooks/usePromotion';
 import { useResponsiveBoard } from '../../hooks/useResponsiveBoard';
@@ -11,34 +11,36 @@ export function Board() {
 
   const [game, setGame] = useState(new Chess());
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
-  const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setGame, setKingInCheckSquare)
+
   const { boardWidth } = useResponsiveBoard()
 
+  const doMove = useCallback((from, to, promotion) => {
+    const gameCopy = { ...game };
+    const move = gameCopy.move({ from, to, promotion });
+    if (move) {
+      setGame(gameCopy);
 
+      if (gameCopy.in_check())
+        setKingInCheckSquare({
+          [getPieceFromPosition(game, { type: 'k', color: game.turn() })]: {
+            boxShadow: '0 0 15px 8px rgb(153, 0, 0) inset'
+          }
+        })
+      else
+        setKingInCheckSquare({})
+
+
+    }
+    return move;
+  }, [game])
+
+  const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setKingInCheckSquare, doMove)
 
   function onPieceDrop(from, to) {
-
-    const gameCopy = { ...game };
-
     if (checkPromotion(from, to) === true) {
       return false
     }
-
-    const move = gameCopy.move({
-      from,
-      to,
-      promotion: 'q'
-    });
-    setGame(gameCopy);
-
-    if (gameCopy.in_check())
-      setKingInCheckSquare({
-        [getPieceFromPosition(game, { type: 'k', color: game.turn() })]: {
-          boxShadow: '0 0 15px 8px rgb(153, 0, 0) inset'
-        }
-      })
-    else
-      setKingInCheckSquare({})
+    const move = doMove(from, to)
 
     return move;
   }

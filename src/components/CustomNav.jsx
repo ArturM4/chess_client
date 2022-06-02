@@ -1,9 +1,11 @@
 
 import React from 'react'
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import { Button, Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import { acceptFriend } from '../services/users';
+import socket from '../socket/socket';
 
-export function CustomNav({ user, setUser }) {
+export function CustomNav({ user, setUser, notifications, setNotifications }) {
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,9 +17,31 @@ export function CustomNav({ user, setUser }) {
   }
 
   const handleLogout = () => {
+    socket.emit("userLogout", user.info.id)
     setUser(null)
+    navigate('/')
   }
 
+  const acceptFriendRequest = async (index, noti) => {
+    if (noti.type === 'friendRequest')
+      await acceptFriend(noti)
+    else if (noti.type === 'challenge')
+      socket.emit("createGame", noti.senderId, noti.receiverId)
+
+    setNotifications((prev) => {
+      let prevCopy = [...prev]
+      prevCopy.splice(index, 1);
+      return prevCopy
+    })
+  }
+
+  const declineFriendRequest = (index) => {
+    setNotifications((prev) => {
+      let prevCopy = [...prev]
+      prevCopy.splice(index, 1);
+      return prevCopy
+    })
+  }
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Container>
@@ -26,20 +50,45 @@ export function CustomNav({ user, setUser }) {
         <Navbar.Collapse id="responsive-navbar-nav" >
           <Nav className="me-auto">
             <Nav.Link onClick={handleNav('game')}>Jugar</Nav.Link>
+            {user && <Nav.Link onClick={handleNav('friends')}>Amics</Nav.Link>}
           </Nav>
           <Nav>
-            {!user ?
-              <>
+            <NavDropdown disabled={!notifications.length > 0} title={'🔔' + notifications.length}>
+              {notifications.length === 0 &&
+                <NavDropdown.ItemText>
+                  <div>No tens cap notificació</div>
+                </NavDropdown.ItemText>}
+              {notifications.map((noti, i) => {
+                return (
+                  <div key={i}>
+                    <NavDropdown.Divider />
+                    <NavDropdown.ItemText>
+                      {noti.type === 'friendRequest'
+                        ? <div>{noti.senderUsername} vol ser el teu amic</div>
+                        : <div>{noti.senderUsername} t'ha desafiat</div>
+                      }
+                      <Button onClick={() => acceptFriendRequest(i, noti)} variant="success">Acceptar</Button>{' '}
+                      <Button onClick={() => declineFriendRequest(i)} variant="danger">Rebutjar</Button>
+                    </NavDropdown.ItemText>
+                  </div>
+                )
+              })}
+              <div className='text-white'>________________________________________</div>
+            </NavDropdown>
+            {!user
+              ? <>
                 <Nav.Link onClick={handleNav('login')}>Iniciar sessió</Nav.Link>
                 <Nav.Link onClick={handleNav('register')}>Registrar-se</Nav.Link>
               </>
-              :
-              <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+              : <>
+                <Nav.Link onClick={handleLogout}>Tancar sessió</Nav.Link>
+                <Navbar.Text> {user.info.username}</Navbar.Text>
+              </>
             }
           </Nav>
         </Navbar.Collapse>
       </Container>
-    </Navbar>
+    </Navbar >
   )
 }
 

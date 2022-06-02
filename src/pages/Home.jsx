@@ -1,13 +1,11 @@
 import { Button, Col, Container, Modal, Row, Stack } from "react-bootstrap";
 import { Board } from "../components/Board/Board";
-import '../mainstyles.css'
-import { useNavigate } from "react-router-dom";
+import '../App.css'
 import { useEffect, useState } from "react";
 import socket from "../socket/socket";
 
 
 export function Home() {
-  const navigate = useNavigate();
   const [searchingGame, setSearchingGame] = useState(false);
   const [showBoard, setshowBoard] = useState(false);
   const [chooseModeModal, setChooseModeModal] = useState(false);
@@ -19,15 +17,6 @@ export function Home() {
     }
   }, []);
 
-
-  useEffect(() => {
-    socket.on("gameInit", (gameId) => {
-      navigate('/game/' + gameId)
-    })
-    return () => {
-      socket.off('gameInit')
-    }
-  }, [navigate]);
 
   function handleChooseMode() {
     setChooseModeModal(true)
@@ -47,7 +36,7 @@ export function Home() {
               <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Un Jugador</Button>
               <Button disabled={searchingGame} onClick={handleChooseMode} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant='' >Multijugador</Button>
               {searchingGame && <p className='ms-md-2 mb-2 mb-md-4 fs-5 text-white'>Buscant partida...</p>}
-              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant='' onClick={() => navigate('challenge')}>Desafiar un amic</Button>
+              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Amics</Button>
               <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Canviar estils</Button>
             </Stack>
           </Col>

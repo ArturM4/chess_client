@@ -6,7 +6,28 @@
 }
 
 .smallContainer {
-  width: 450px;
+  max-width: 450px;
   margin: auto;
   background-color: #2f2f2f;
+}
+
+.mediumContainer {
+  max-width: 800px;
+  margin: auto;
+  overflow-wrap: break-word;
+}
+
+.dark {
+  color: #fff !important;
+  background-color: #2f2f2f !important
+}
+
+.c-386ecf {
+  background-color: #386ecf !important;
+  border-color: #386ecf !important;
+  color: #fff !important;
+}
+
+.c-386ecf:hover {
+  background-color: #2964d1 !important;
 }
