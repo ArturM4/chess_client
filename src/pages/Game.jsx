@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
 import React, { useCallback, useEffect, useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import { Chessboard } from 'react-chessboard';
 import { useParams } from 'react-router-dom';
 import { usePromotion } from '../hooks/usePromotion';
@@ -21,6 +21,7 @@ export function Game() {
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
   const { boardWidth } = useResponsiveBoard()
   const [showBoard, setshowBoard] = useState(false);
+  const [voiceMsg, setVoiceMsg] = useState('');
 
 
 
@@ -71,6 +72,44 @@ export function Game() {
   useEffect(() => {
     socket.emit('joinGame', gameId)
   }, [gameId]);
+
+  useEffect(() => {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+    recognition.lang = "es-ES";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onend = event => {
+      //recognition.start();
+      console.log('end')
+    };
+
+    recognition.onresult = result => {
+      console.log(result)
+      let frase = result.results[result.results.length - 1][0].transcript
+      console.log(frase)
+
+      let arrayFrase = frase.toLowerCase().split(' ')
+      console.log(arrayFrase)
+      let move = arrayFrase[0][0] + arrayFrase[1] + ' ' + arrayFrase[2][0] + arrayFrase[3]
+      console.log(move)
+
+      //doMove(arrayFrase[0][0] + arrayFrase[0], arrayFrase[0][0] + arrayFrase[0])
+      setVoiceMsg(result.results[result.results.length - 1][0].transcript)
+    };
+
+    recognition.start();
+    console.log('rec start')
+    return () => {
+      console.log('stoop')
+      recognition.stop()
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log('domove')
+  }, [doMove]);
 
   useEffect(() => {
 
@@ -202,7 +241,15 @@ export function Game() {
           {showBoard && <>
             <p className='display-3 text-white'>{timeFormated(false)}</p>
             <p className='display-3 text-white'>{timeFormated(true)}</p>
+
           </>}
+          <div>
+
+            {voiceMsg}
+            <Button onClick={() => {
+
+            }}>move</Button>
+          </div>
         </Col>
       </Row>
 

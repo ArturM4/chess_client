@@ -1,9 +1,10 @@
 import { Chess } from 'chess.js';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { usePromotion } from '../../hooks/usePromotion';
 import { useResponsiveBoard } from '../../hooks/useResponsiveBoard';
 import { getPieceFromPosition } from '../../utils/chessUtils';
+import { VoiceControl } from '../VoiceControl';
 import "./Board.css"
 import Promotion from './Promotion';
 
@@ -46,19 +47,21 @@ export function Board() {
   }
 
 
-
   return (
-    <div className='boardWrapper'>
+    <>
+      <div className='boardWrapper'>
 
-      <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={promote} orientation={'w'} />
-      <Chessboard
-        boardWidth={boardWidth}
-        position={game.fen()}
-        onPieceDrop={onPieceDrop}
-        onSquareClick={() => cancelPromotion()}
-        onPieceDragBegin={() => cancelPromotion()}
-        customSquareStyles={{ ...kingInCheckSquare }}
-      />
-    </div>
+        <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={promote} orientation={'w'} />
+        <Chessboard
+          boardWidth={boardWidth}
+          position={game.fen()}
+          onPieceDrop={onPieceDrop}
+          onSquareClick={() => cancelPromotion()}
+          onPieceDragBegin={() => cancelPromotion()}
+          customSquareStyles={{ ...kingInCheckSquare }}
+        />
+      </div>
+      <VoiceControl doMove={doMove} />
+    </>
   );
 }
