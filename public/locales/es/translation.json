@@ -1,0 +1,70 @@
+{
+  "Home":{
+    "singleplayer": "Un jugador",
+    "multiplayer": "Multijugador",
+    "friends": "Amigos",
+    "changeStyles": "Canviar estilos",
+    "searchingGame": "Buscando partida...",
+    "chooseMode": "Escoge el modo de juego"
+  },
+  "VoiceControl":{
+    "activate": "Activar control de voz",
+    "information": "Como funciona",
+    "microphone": "Micrófono",
+    "listening": "Escuchando",
+    "muted": "Apagado",
+    "explanationTitle":"Funcionamiento del control de voz",
+    "explanation" : {
+      "1":"El control de voz sirve para poder dictar los movimientos mediante la voz.",
+      "2":"Actualmente solo esta disponible en castellano.",
+      "3":"Para realizar un movimiento se dice la casilla inicial y la final (b1 c3).",
+      "4":"Para mejorar el reconocimiento se recomienda utilizar palabras en vez de letras (Barco 1 Casa 3).",
+      "5":"Ejemplos de palabras por cada letra:",
+      "6":"A - Alpha",
+      "7":"B - Bravo, Barco",
+      "8":"C - Casa, Coche",
+      "9":"D - Día",
+      "10":"E - Eco",
+      "11":"F - Faro",
+      "12":"G - Gorro, Golf",
+      "13":"H - Hotel"
+    }
+  },
+  "CustomNav":{
+    "friends":"Amigos",
+    "login":"Iniciar sesión",
+    "logout":"Cerrar sesión",
+    "register":"Registrarse",
+    "noNotifications":"No tienes ninguna notificación",
+    "friendRequest":"quiere ser tu amigo",
+    "friendChallenge":"te ha desafiado",
+    "accept":"Aceptar",
+    "cancel":"Cancelar",
+    "language":"Idioma"
+  },
+  "Login":{
+    "username":"Nombre de usuario",
+    "password":"Contraseña",
+    "login":"Iniciar sesión",
+    "register":"Registrarse",
+    "errors":{
+      "wrongCredentials":"Usuari o contraseña incorrectos",
+      "wrongFormat":"El nombre de usuario no puede estar vacío y la contraseña debe tener más de 5 caracteres",
+      "userExists":"Este nombre de usuario ya existe",
+      "GeneralError":"Ha surgido un error, inténtalo de nuevo más tarde"
+    }
+  },
+  "Friends":{
+    "addNew":"Añadir nuevo amigo",
+    "friends":"Amigos",
+    "challenge":"Desafiar",
+    "newFormTitle":"Indica el nombre de usuario del nuevo amigo",
+    "username":"Nombre de usuario",
+    "sendRequest":"Enviar solicitud"
+  },
+  "GameResult":{
+    "victory":"Victoria!",
+    "defeat":"Derrota...",
+    "draw":"Empate"
+  }
+}
