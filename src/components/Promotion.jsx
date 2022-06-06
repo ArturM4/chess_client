@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
 
-export default function Promotion({ isPromoting, getPromotionRow, turn, handlePromotion, orientation }) {
+export function Promotion({ isPromoting, getPromotionRow, turn, handlePromotion, orientation }) {
   return (
     <>
       {isPromoting() && turn === orientation && <div className='promotionPrompt' style={{ left: turn === 'w' ? getPromotionRow() * 12.5 + '%' : (7 - getPromotionRow()) * 12.5 + '%' }}>

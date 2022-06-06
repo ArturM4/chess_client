@@ -1,17 +1,18 @@
 import { Chess } from 'chess.js';
 import React, { useCallback, useEffect, useState } from 'react'
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { Chessboard } from 'react-chessboard';
 import { useParams } from 'react-router-dom';
 import { usePromotion } from '../hooks/usePromotion';
 import { useResponsiveBoard } from '../hooks/useResponsiveBoard';
 import socket from '../socket/socket'
 import { getPieceFromPosition, getTimeFromMode, isPieceWhite } from '../utils/chessUtils';
-import Promotion from '../components/Board/Promotion';
+import { Promotion } from '../components/Promotion';
 import GameResult from '../components/GameResult';
 import { useClock } from '../hooks/useClock';
+import { VoiceControl } from '../components/VoiceControl';
 
-export function Game() {
+export function Game({ voiceControl, setVoiceControl }) {
   const gameId = useParams().id
 
   const [isPlayerWhite, setIsPlayerWhite] = useState(true);
@@ -21,10 +22,6 @@ export function Game() {
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
   const { boardWidth } = useResponsiveBoard()
   const [showBoard, setshowBoard] = useState(false);
-  const [voiceMsg, setVoiceMsg] = useState('');
-
-
-
 
   const gameOver = useCallback((result) => {
     setArePiecesDraggable(false)
@@ -72,44 +69,6 @@ export function Game() {
   useEffect(() => {
     socket.emit('joinGame', gameId)
   }, [gameId]);
-
-  useEffect(() => {
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
-    recognition.lang = "es-ES";
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onend = event => {
-      //recognition.start();
-      console.log('end')
-    };
-
-    recognition.onresult = result => {
-      console.log(result)
-      let frase = result.results[result.results.length - 1][0].transcript
-      console.log(frase)
-
-      let arrayFrase = frase.toLowerCase().split(' ')
-      console.log(arrayFrase)
-      let move = arrayFrase[0][0] + arrayFrase[1] + ' ' + arrayFrase[2][0] + arrayFrase[3]
-      console.log(move)
-
-      //doMove(arrayFrase[0][0] + arrayFrase[0], arrayFrase[0][0] + arrayFrase[0])
-      setVoiceMsg(result.results[result.results.length - 1][0].transcript)
-    };
-
-    recognition.start();
-    console.log('rec start')
-    return () => {
-      console.log('stoop')
-      recognition.stop()
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log('domove')
-  }, [doMove]);
 
   useEffect(() => {
 
@@ -216,9 +175,9 @@ export function Game() {
   return (
     <Container className='mt-5'>
       <Row>
-        <Col md={0} lg={2}>
+        <Col md={0} xl={2}>
         </Col>
-        <Col xs={12} md={10} lg={8}>
+        <Col xs={12} md={9} xl={8} >
           <div className='boardWrapper'>
             {showBoard && <>
               <GameResult showResult={showResult} setShowResult={setShowResult} />
@@ -237,19 +196,12 @@ export function Game() {
             </>}
           </div>
         </Col>
-        <Col xs={12} md={2} lg={2} className='align-self-center'>
+        <Col xs={12} md={3} xl={2} className='align-self-center'>
           {showBoard && <>
             <p className='display-3 text-white'>{timeFormated(false)}</p>
             <p className='display-3 text-white'>{timeFormated(true)}</p>
-
+            <VoiceControl doMove={onPieceDrop} yourTurn={game.turn() === 'w' === isPlayerWhite} voiceControl={voiceControl} setVoiceControl={setVoiceControl} />
           </>}
-          <div>
-
-            {voiceMsg}
-            <Button onClick={() => {
-
-            }}>move</Button>
-          </div>
         </Col>
       </Row>
 
