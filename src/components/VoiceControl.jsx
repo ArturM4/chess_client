@@ -1,12 +1,14 @@
 
 import React, { useEffect, useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 export function VoiceControl({ doMove, yourTurn, voiceControl, setVoiceControl }) {
 
   const [lastVoiceMSG, setLastVoiceMSG] = useState('')
   const [showVCModal, setShowVCModal] = useState(false)
+  const { t } = useTranslation();
 
   const commands = [
     {
@@ -62,7 +64,7 @@ export function VoiceControl({ doMove, yourTurn, voiceControl, setVoiceControl }
         <Form>
           <Form.Check
             type="switch"
-            label="Activar control de veu"
+            label={t("VoiceControl.activate")}
             onChange={({ target }) => {
               if (target.checked)
                 setVoiceControl(true)
@@ -72,9 +74,9 @@ export function VoiceControl({ doMove, yourTurn, voiceControl, setVoiceControl }
             checked={voiceControl}
           />
         </Form>
-        <Button onClick={() => setShowVCModal(true)} variant='secondary' size='sm' className='my-2'>Com funciona</Button>
+        <Button onClick={() => setShowVCModal(true)} variant='secondary' size='sm' className='my-2'>{t("VoiceControl.information")}</Button>
         {voiceControl && <>
-          <p>Micròfon: {listening ? 'Escoltant' : 'Apagat'}</p>
+          <p>{t("VoiceControl.microphone")}: {listening ? t("VoiceControl.listening") : t("VoiceControl.muted")}</p>
           <p>{lastVoiceMSG}</p>
         </>}
 
@@ -82,22 +84,22 @@ export function VoiceControl({ doMove, yourTurn, voiceControl, setVoiceControl }
 
       <Modal show={showVCModal} onHide={() => setShowVCModal(false)} centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Funcionament del control per veu</Modal.Title>
+          <Modal.Title>{t("VoiceControl.explanationTitle")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          El control per veu serveix per poder dictar els moviments a fer mitjançant la veu.<br />
-          Actualment només està disponible en castellà.<br />
-          Per realitzar un moviment s'ha de dir la casella inicial de la peça i la casella final (b1 c3).<br />
-          Per millorar el reconeixement es recomanable utilitzar paraules enlloc de lletres (Barco 1 Casa 3).<br />
-          Exemples de paraules per cada lletra:<br />
-          A - Alpha<br />
-          B - Bravo, Barco<br />
-          C - Casa, Coche<br />
-          D - Día<br />
-          E - Eco<br />
-          F - Faro<br />
-          G - Gorro, Golf<br />
-          H - Hotel<br />
+          {t("VoiceControl.explanation.1")}<br />
+          {t("VoiceControl.explanation.2")}<br />
+          {t("VoiceControl.explanation.3")}<br />
+          {t("VoiceControl.explanation.4")}<br />
+          {t("VoiceControl.explanation.5")}<br />
+          {t("VoiceControl.explanation.6")}<br />
+          {t("VoiceControl.explanation.7")}<br />
+          {t("VoiceControl.explanation.8")}<br />
+          {t("VoiceControl.explanation.9")}<br />
+          {t("VoiceControl.explanation.10")}<br />
+          {t("VoiceControl.explanation.11")}<br />
+          {t("VoiceControl.explanation.12")}<br />
+          {t("VoiceControl.explanation.13")}<br />
         </Modal.Body>
         <Modal.Footer>
         </Modal.Footer>

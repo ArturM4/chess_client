@@ -1,6 +1,8 @@
 
+import i18next from 'i18next';
 import React from 'react'
-import { Button, Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { Button, Container, Dropdown, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { acceptFriend } from '../services/users';
 import socket from '../socket/socket';
@@ -9,6 +11,9 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
+
+
   const handleNav = (path) => () => {
     let replace = false;
     if (matchPath(path, location.pathname) !== null) // path es igual al actual
@@ -42,6 +47,11 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
       return prevCopy
     })
   }
+
+  function changeLanguage(lang) {
+    i18next.changeLanguage(lang)
+  }
+
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Container>
@@ -49,14 +59,13 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav" >
           <Nav className="me-auto">
-            <Nav.Link onClick={handleNav('game')}>Jugar</Nav.Link>
-            {user && <Nav.Link onClick={handleNav('friends')}>Amics</Nav.Link>}
+            {user && <Nav.Link onClick={handleNav('friends')}>{t("CustomNav.friends")}</Nav.Link>}
           </Nav>
           <Nav>
             <NavDropdown disabled={!notifications.length > 0} title={'🔔' + notifications.length}>
               {notifications.length === 0 &&
                 <NavDropdown.ItemText>
-                  <div>No tens cap notificació</div>
+                  <div>{t("CustomNav.noNotifications")}</div>
                 </NavDropdown.ItemText>}
               {notifications.map((noti, i) => {
                 return (
@@ -64,24 +73,39 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
                     <NavDropdown.Divider />
                     <NavDropdown.ItemText>
                       {noti.type === 'friendRequest'
-                        ? <div>{noti.senderUsername} vol ser el teu amic</div>
-                        : <div>{noti.senderUsername} t'ha desafiat</div>
+                        ? <div>{noti.senderUsername} {t("CustomNav.friendRequest")}</div>
+                        : <div>{noti.senderUsername} {t("CustomNav.friendChallenge")}</div>
                       }
-                      <Button onClick={() => acceptFriendRequest(i, noti)} variant="success">Acceptar</Button>{' '}
-                      <Button onClick={() => declineFriendRequest(i)} variant="danger">Rebutjar</Button>
+                      <Button onClick={() => acceptFriendRequest(i, noti)} variant="success">{t("CustomNav.accept")}</Button>{' '}
+                      <Button onClick={() => declineFriendRequest(i)} variant="danger">{t("CustomNav.cancel")}</Button>
                     </NavDropdown.ItemText>
                   </div>
                 )
               })}
               <div className='text-white'>________________________________________</div>
             </NavDropdown>
+
+            <NavDropdown title='⚙️' >
+              <Dropdown>
+                <Dropdown.Toggle variant="secondary" className='w-100 text-start'>
+                  {t("CustomNav.language")}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={() => changeLanguage('en')}>English</Dropdown.Item>
+                  <Dropdown.Item onClick={() => changeLanguage('ca')}>Català</Dropdown.Item>
+                  <Dropdown.Item onClick={() => changeLanguage('es')}>Castellano</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </NavDropdown>
+
             {!user
               ? <>
-                <Nav.Link onClick={handleNav('login')}>Iniciar sessió</Nav.Link>
-                <Nav.Link onClick={handleNav('register')}>Registrar-se</Nav.Link>
+                <Nav.Link onClick={handleNav('login')}>{t("CustomNav.login")}</Nav.Link>
+                <Nav.Link onClick={handleNav('register')}>{t("CustomNav.register")}</Nav.Link>
               </>
               : <>
-                <Nav.Link onClick={handleLogout}>Tancar sessió</Nav.Link>
+                <Nav.Link onClick={handleLogout}>{t("CustomNav.logout")}</Nav.Link>
                 <Navbar.Text> {user.info.username}</Navbar.Text>
               </>
             }

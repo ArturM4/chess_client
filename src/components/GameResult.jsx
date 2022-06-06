@@ -1,22 +1,22 @@
 import React from 'react'
 import { Alert } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next';
 
 export default function GameResult({ showResult, setShowResult }) {
+  const { t } = useTranslation();
+
   return (
     <>
       {showResult === 'win' && < Alert className='resultContainer m-4' variant="success" onClose={() => setShowResult('')} dismissible>
-        <Alert.Heading>Victòria!</Alert.Heading>
-        <p>Enhorabona, has guanyat!</p>
+        <Alert.Heading>{t("GameResult.victory")}</Alert.Heading>
       </Alert>}
 
       {showResult === 'loss' && <Alert className='resultContainer m-4' variant="danger" onClose={() => setShowResult('')} dismissible>
-        <Alert.Heading>Derrota...</Alert.Heading>
-        <p>Has perdut!</p>
+        <Alert.Heading>{t("GameResult.defeat")}</Alert.Heading>
       </Alert>}
 
       {showResult === 'draw' && <Alert className='resultContainer m-4' variant="secondary" onClose={() => setShowResult('')} dismissible>
-        <Alert.Heading>Empat</Alert.Heading>
-        <p>La partida ha acabat en empat</p>
+        <Alert.Heading>{t("GameResult.draw")}</Alert.Heading>
       </Alert>}
     </>
   )

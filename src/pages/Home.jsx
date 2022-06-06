@@ -6,6 +6,7 @@ import socket from "../socket/socket";
 import { VoiceControl } from "../components/VoiceControl";
 import { Chess } from "chess.js";
 import { getPieceFromPosition } from "../utils/chessUtils";
+import { useTranslation } from "react-i18next";
 
 
 export function Home({ voiceControl, setVoiceControl }) {
@@ -15,6 +16,8 @@ export function Home({ voiceControl, setVoiceControl }) {
 
   const [game, setGame] = useState(new Chess());
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
+
+  const { t } = useTranslation();
 
   const doMove = useCallback((from, to, promotion) => {
     const gameCopy = { ...game };
@@ -60,11 +63,11 @@ export function Home({ voiceControl, setVoiceControl }) {
         <Row>
           <Col xs={12} md={3}>
             <Stack className="mx-auto">
-              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Un Jugador</Button>
-              <Button disabled={searchingGame} onClick={handleChooseMode} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant='' >Multijugador</Button>
-              {searchingGame && <p className='ms-md-2 mb-2 mb-md-4 fs-5 text-white'>Buscant partida...</p>}
-              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Amics</Button>
-              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Canviar estils</Button>
+              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.singleplayer")}</Button>
+              <Button disabled={searchingGame} onClick={handleChooseMode} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant='' >{t("Home.multiplayer")}</Button>
+              {searchingGame && <p className='ms-md-2 mb-2 mb-md-4 fs-5 text-white'>{t("Home.searchingGame")}</p>}
+              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.friends")}</Button>
+              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.changeStyles")}</Button>
             </Stack>
             <VoiceControl doMove={doMove} yourTurn={true} voiceControl={voiceControl} setVoiceControl={setVoiceControl} />
           </Col>
@@ -77,7 +80,7 @@ export function Home({ voiceControl, setVoiceControl }) {
 
       <Modal show={chooseModeModal} onHide={() => setChooseModeModal(false)} centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Tria el mode de joc</Modal.Title>
+          <Modal.Title>{t("Home.chooseMode")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Button onClick={() => handleSearchGame('bullet')} size='lg' className='me-2 mb-2 py-3' >Bullet (1min)</Button>
