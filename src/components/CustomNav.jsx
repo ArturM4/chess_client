@@ -87,7 +87,7 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
 
             <NavDropdown title='⚙️' >
               <Dropdown>
-                <Dropdown.Toggle variant="secondary" className='w-100 text-start'>
+                <Dropdown.Toggle variant="light" className='w-100 text-start'>
                   {t("CustomNav.language")}
                 </Dropdown.Toggle>
 
