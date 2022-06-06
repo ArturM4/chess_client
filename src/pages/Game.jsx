@@ -7,11 +7,12 @@ import { usePromotion } from '../hooks/usePromotion';
 import { useResponsiveBoard } from '../hooks/useResponsiveBoard';
 import socket from '../socket/socket'
 import { getPieceFromPosition, getTimeFromMode, isPieceWhite } from '../utils/chessUtils';
-import Promotion from '../components/Board/Promotion';
+import { Promotion } from '../components/Promotion';
 import GameResult from '../components/GameResult';
 import { useClock } from '../hooks/useClock';
+import { VoiceControl } from '../components/VoiceControl';
 
-export function Game() {
+export function Game({ voiceControl, setVoiceControl }) {
   const gameId = useParams().id
 
   const [isPlayerWhite, setIsPlayerWhite] = useState(true);
@@ -21,9 +22,6 @@ export function Game() {
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
   const { boardWidth } = useResponsiveBoard()
   const [showBoard, setshowBoard] = useState(false);
-
-
-
 
   const gameOver = useCallback((result) => {
     setArePiecesDraggable(false)
@@ -177,9 +175,9 @@ export function Game() {
   return (
     <Container className='mt-5'>
       <Row>
-        <Col md={0} lg={2}>
+        <Col md={0} xl={2}>
         </Col>
-        <Col xs={12} md={10} lg={8}>
+        <Col xs={12} md={9} xl={8} >
           <div className='boardWrapper'>
             {showBoard && <>
               <GameResult showResult={showResult} setShowResult={setShowResult} />
@@ -198,10 +196,11 @@ export function Game() {
             </>}
           </div>
         </Col>
-        <Col xs={12} md={2} lg={2} className='align-self-center'>
+        <Col xs={12} md={3} xl={2} className='align-self-center'>
           {showBoard && <>
             <p className='display-3 text-white'>{timeFormated(false)}</p>
             <p className='display-3 text-white'>{timeFormated(true)}</p>
+            <VoiceControl doMove={onPieceDrop} yourTurn={game.turn() === 'w' === isPlayerWhite} voiceControl={voiceControl} setVoiceControl={setVoiceControl} />
           </>}
         </Col>
       </Row>

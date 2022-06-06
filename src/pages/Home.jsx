@@ -1,14 +1,40 @@
 import { Button, Col, Container, Modal, Row, Stack } from "react-bootstrap";
-import { Board } from "../components/Board/Board";
+import { HomeBoard } from "../components/HomeBoard";
 import '../App.css'
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import socket from "../socket/socket";
+import { VoiceControl } from "../components/VoiceControl";
+import { Chess } from "chess.js";
+import { getPieceFromPosition } from "../utils/chessUtils";
 
 
-export function Home() {
+export function Home({ voiceControl, setVoiceControl }) {
   const [searchingGame, setSearchingGame] = useState(false);
   const [showBoard, setshowBoard] = useState(false);
   const [chooseModeModal, setChooseModeModal] = useState(false);
+
+  const [game, setGame] = useState(new Chess());
+  const [kingInCheckSquare, setKingInCheckSquare] = useState({});
+
+  const doMove = useCallback((from, to, promotion) => {
+    const gameCopy = { ...game };
+    const move = gameCopy.move({ from, to, promotion });
+    if (move) {
+      setGame(gameCopy);
+
+      if (gameCopy.in_check())
+        setKingInCheckSquare({
+          [getPieceFromPosition(game, { type: 'k', color: game.turn() })]: {
+            boxShadow: '0 0 15px 8px rgb(153, 0, 0) inset'
+          }
+        })
+      else
+        setKingInCheckSquare({})
+
+
+    }
+    return move;
+  }, [game])
 
   useEffect(() => {
     setshowBoard(true)
@@ -21,6 +47,7 @@ export function Home() {
   function handleChooseMode() {
     setChooseModeModal(true)
   }
+
   function handleSearchGame(mode) {
     setChooseModeModal(false)
     setSearchingGame(true)
@@ -39,10 +66,11 @@ export function Home() {
               <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Amics</Button>
               <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Canviar estils</Button>
             </Stack>
+            <VoiceControl doMove={doMove} yourTurn={true} voiceControl={voiceControl} setVoiceControl={setVoiceControl} />
           </Col>
           <Col className="mt-3 mt-md-0" xs={12} md={9}>
             {showBoard &&
-              <Board />}
+              <HomeBoard props={{ game, doMove, setKingInCheckSquare, kingInCheckSquare }} />}
           </Col>
         </Row>
       </Container>

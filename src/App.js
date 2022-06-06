@@ -12,6 +12,8 @@ import { GameWrapper } from './pages/GameWrapper';
 function App() {
   const [user, setUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [voiceControl, setVoiceControl] = useState(false)
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,8 +44,8 @@ function App() {
     <>
       <CustomNav user={user} setUser={setUser} notifications={notifications} setNotifications={setNotifications} />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/game/:id" element={<GameWrapper />} />
+        <Route path="/" element={<Home voiceControl={voiceControl} setVoiceControl={setVoiceControl} />} />
+        <Route path="/game/:id" element={<GameWrapper voiceControl={voiceControl} setVoiceControl={setVoiceControl} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/register" element={<Register setUser={setUser} />} />
         <Route path="/friends" element={<Friends user={user} />} />
