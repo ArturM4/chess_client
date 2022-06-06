@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { login } from '../services/login';
 import { ErrorMessage } from '../components/ErrorMessage';
 import socket from '../socket/socket';
+import { useTranslation } from 'react-i18next';
 
 
 export function Login({ setUser }) {
@@ -13,6 +14,7 @@ export function Login({ setUser }) {
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
 
   const handleLogin = async (e) => {
@@ -24,7 +26,7 @@ export function Login({ setUser }) {
       setUser(user)
       navigate('/')
     } catch (error) {
-      setErrorMsg('Usuari o contrasenya incorrectes')
+      setErrorMsg(t("Login.errors.wrongCredentials"))
     }
 
   }
@@ -33,18 +35,18 @@ export function Login({ setUser }) {
     <div className='p-4 mt-5 smallContainer'>
       <Form onSubmit={handleLogin}>
         <Form.Group className="mb-3 text-white">
-          <Form.Label>Nom d'usuari</Form.Label>
-          <Form.Control type="text" placeholder="Nom d'usuari" value={username} onChange={(e) => setUsername(e.target.value)} />
+          <Form.Label>{t("Login.username")}</Form.Label>
+          <Form.Control type="text" placeholder={t("Login.username")} value={username} onChange={(e) => setUsername(e.target.value)} />
         </Form.Group>
 
         <Form.Group className="mb-3 text-white">
-          <Form.Label>Contrasenya</Form.Label>
-          <Form.Control type="password" placeholder="Contrasenya" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <Form.Label>{t("Login.password")}</Form.Label>
+          <Form.Control type="password" placeholder={t("Login.password")} value={password} onChange={(e) => setPassword(e.target.value)} />
         </Form.Group>
 
         <ErrorMessage msg={errorMsg} />
         <Button variant="primary" type="submit">
-          Login
+          {t("Login.login")}
         </Button>
 
 

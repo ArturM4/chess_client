@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Button, Form } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { login } from '../services/login';
@@ -13,6 +14,7 @@ export function Register({ setUser }) {
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
 
   const handleRegister = async (e) => {
@@ -26,11 +28,11 @@ export function Register({ setUser }) {
       navigate('/')
     } catch (error) {
       if (error?.response?.data?.error === 'Incorrect format of username or password')
-        setErrorMsg('El nom d\'usuari no pot estar buit i la contrasenya ha de tenir més de 5 caràcters')
+        setErrorMsg(t("Login.errors.wrongFormat"))
       else if (error?.response?.data?.error === 'Username already exists')
-        setErrorMsg('Aquest nom d\'usuari ja existeix')
+        setErrorMsg(t("Login.errors.userExists"))
       else
-        setErrorMsg('ha sorgit un error, intenta-ho de nou més tard')
+        setErrorMsg(t("Login.errors.GeneralError"))
     }
 
   }
@@ -39,18 +41,18 @@ export function Register({ setUser }) {
     <div className='p-4 mt-5 smallContainer'>
       <Form onSubmit={handleRegister}>
         <Form.Group className="mb-3 text-white">
-          <Form.Label>Nom d'usuari</Form.Label>
-          <Form.Control type="text" placeholder="Nom d'usuari" value={username} onChange={(e) => setUsername(e.target.value)} />
+          <Form.Label>{t("Login.username")}</Form.Label>
+          <Form.Control type="text" placeholder={t("Login.username")} value={username} onChange={(e) => setUsername(e.target.value)} />
         </Form.Group>
 
         <Form.Group className="mb-3 text-white">
-          <Form.Label>Contrasenya</Form.Label>
-          <Form.Control type="password" placeholder="Contrasenya" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <Form.Label>{t("Login.password")}</Form.Label>
+          <Form.Control type="password" placeholder={t("Login.password")} value={password} onChange={(e) => setPassword(e.target.value)} />
         </Form.Group>
 
         <ErrorMessage msg={errorMsg} />
         <Button variant="primary" type="submit">
-          Registrar-se
+          {t("Login.register")}
         </Button>
 
 

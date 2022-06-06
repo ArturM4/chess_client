@@ -1,0 +1,70 @@
+{
+  "Home":{
+    "singleplayer": "Un jugador",
+    "multiplayer": "Multijugador",
+    "friends": "Amics",
+    "changeStyles": "Canviar estils",
+    "searchingGame": "Buscant partida...",
+    "chooseMode": "Tria el mode de joc"
+  },
+  "VoiceControl":{
+    "activate": "Activar control de veu",
+    "information": "Com funciona",
+    "microphone": "Micròfon",
+    "listening": "Escoltant",
+    "muted": "Apagat",
+    "explanationTitle":"Funcionament del control per veu",
+    "explanation" : {
+      "1":"El control per veu serveix per poder dictar els moviments amb la veu.",
+      "2":"Actualment només està disponible en castellà.",
+      "3":"Per realitzar un moviment s'ha de dir la casella inicial de la peça i la casella final (b1 c3).",
+      "4":"Per millorar el reconeixement es recomanable utilitzar paraules enlloc de lletres (Barco 1 Casa 3).",
+      "5":"Exemples de paraules per cada lletra:",
+      "6":"A - Alpha",
+      "7":"B - Bravo, Barco",
+      "8":"C - Casa, Coche",
+      "9":"D - Día",
+      "10":"E - Eco",
+      "11":"F - Faro",
+      "12":"G - Gorro, Golf",
+      "13":"H - Hotel"
+    }
+  },
+  "CustomNav":{
+    "friends":"Amics",
+    "login":"Iniciar sessió",
+    "logout":"Tancar sessió",
+    "register":"Registrar-se",
+    "noNotifications":"No tens cap notificació",
+    "friendRequest":"vol ser el teu amic",
+    "friendChallenge":"t'ha desafiat",
+    "accept":"Acceptar",
+    "cancel":"Rebutjar",
+    "language":"Idioma"
+  },
+  "Login":{
+    "username":"Nom d'usuari",
+    "password":"Contrasenya",
+    "login":"Iniciar sessió",
+    "register":"Registrar-se",
+    "errors":{
+      "wrongCredentials":"Usuari o contrasenya incorrectes",
+      "wrongFormat":"El nom d'usuari no pot estar buit i la contrasenya ha de tenir més de 5 caràcters",
+      "userExists":"Aquest nom d'usuari ja existeix",
+      "GeneralError":"ha sorgit un error, intenta-ho de nou més tard"
+    }
+  },
+  "Friends":{
+    "addNew":"Afegir nou amic",
+    "friends":"Amics",
+    "challenge":"Desafiar",
+    "newFormTitle":"Indica el nom d'usuari del nou amic",
+    "username":"Nom d'usuari",
+    "sendRequest":"Enviar sol·licitud"
+  },
+  "GameResult":{
+    "victory":"Victòria!",
+    "defeat":"Derrota...",
+    "draw":"Empat"
+  }
+}

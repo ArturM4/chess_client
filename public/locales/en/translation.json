@@ -1,0 +1,70 @@
+{
+  "Home":{
+    "singleplayer": "Singleplayer",
+    "multiplayer": "Multiplayer",
+    "friends": "Friends",
+    "changeStyles": "Change styles",
+    "searchingGame": "Searching game...",
+    "chooseMode": "Choose the game mode"
+  },
+  "VoiceControl":{
+    "activate": "Activate voice control",
+    "information": "How it works",
+    "microphone": "Microphone",
+    "listening": "Listening",
+    "muted": "Muted",
+    "explanationTitle":"Voice control",
+    "explanation" : {
+      "1":"The voice control is used to dictate movements by voice.",
+      "2":"It is currently only available in Spanish.",
+      "3":"To perform a move you have to say the initial and final squares (b1 c3).",
+      "4":"To improve recognition it is recommended to use words instead of letters (Barco 1 Casa 3).",
+      "5":"Examples of words for each letter:",
+      "6":"A - Alpha",
+      "7":"B - Bravo, Barco",
+      "8":"C - Casa, Coche",
+      "9":"D - Día",
+      "10":"E - Eco",
+      "11":"F - Faro",
+      "12":"G - Gorro, Golf",
+      "13":"H - Hotel"
+    }
+  },
+  "CustomNav":{
+    "friends":"Friends",
+    "login":"Login",
+    "logout":"Logout",
+    "register":"Register",
+    "noNotifications":"You do not have any notifications",
+    "friendRequest":"wants to be your friend",
+    "friendChallenge":"has challenged you",
+    "accept":"Accept",
+    "cancel":"Cancel",
+    "language":"Language"
+  },
+  "Login":{
+    "username":"Username",
+    "password":"Password",
+    "login":"Login",
+    "register":"Register",
+    "errors":{
+      "wrongCredentials":"Incorrect username or password",
+      "wrongFormat":"Username cannot be empty and password must be longer than 5 characters",
+      "userExists":"This user name already exists",
+      "GeneralError":"An error occurred, please try again later"
+    }
+  },
+  "Friends":{
+    "addNew":"Add new friend",
+    "friends":"Friends",
+    "challenge":"Challenge",
+    "newFormTitle":"Enter new friend's username",
+    "username":"Username",
+    "sendRequest":"Send request"
+  },
+  "GameResult":{
+    "victory":"Victory!",
+    "defeat":"Defeat...",
+    "draw":"Draw"
+  }
+}
