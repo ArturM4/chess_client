@@ -45,7 +45,7 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Container>
-        <Navbar.Brand style={{ cursor: 'pointer' }} onClick={handleNav('/')}>Escacs</Navbar.Brand>
+        <Navbar.Brand style={{ cursor: 'pointer' }} onClick={handleNav('/')}>AirChess</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav" >
           <Nav className="me-auto">
