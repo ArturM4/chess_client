@@ -16,3 +16,8 @@ export const getUser = async (id) => {
   const res = await axios.get(url + '/' + id)
   return res.data
 }
+
+export const getAllUsers = async (populated) => {
+  const res = await axios.get(url + '/?populated=' + populated)
+  return res.data
+}

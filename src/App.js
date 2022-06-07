@@ -9,6 +9,7 @@ import { Friends } from './pages/Friends';
 import socket from './socket/socket';
 import { GameWrapper } from './pages/GameWrapper';
 import { ComputerGame } from './pages/ComputerGame';
+import { Ranking } from './pages/Ranking';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -51,6 +52,7 @@ function App() {
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/register" element={<Register setUser={setUser} />} />
         <Route path="/friends" element={<Friends user={user} />} />
+        <Route path="/ranking" element={<Ranking user={user} />} />
       </Routes>
     </>
   );
