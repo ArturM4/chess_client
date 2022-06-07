@@ -8,6 +8,7 @@ import { Register } from './pages/Register';
 import { Friends } from './pages/Friends';
 import socket from './socket/socket';
 import { GameWrapper } from './pages/GameWrapper';
+import { ComputerGame } from './pages/ComputerGame';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -46,6 +47,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home voiceControl={voiceControl} setVoiceControl={setVoiceControl} />} />
         <Route path="/game/:id" element={<GameWrapper voiceControl={voiceControl} setVoiceControl={setVoiceControl} />} />
+        <Route path="/game/" element={<ComputerGame voiceControl={voiceControl} setVoiceControl={setVoiceControl} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/register" element={<Register setUser={setUser} />} />
         <Route path="/friends" element={<Friends user={user} />} />
