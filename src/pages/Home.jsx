@@ -7,6 +7,7 @@ import { VoiceControl } from "../components/VoiceControl";
 import { Chess } from "chess.js";
 import { getPieceFromPosition } from "../utils/chessUtils";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 
 export function Home({ voiceControl, setVoiceControl }) {
@@ -18,6 +19,7 @@ export function Home({ voiceControl, setVoiceControl }) {
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
 
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const doMove = useCallback((from, to, promotion) => {
     const gameCopy = { ...game };
@@ -63,7 +65,7 @@ export function Home({ voiceControl, setVoiceControl }) {
         <Row>
           <Col xs={12} md={3}>
             <Stack className="mx-auto">
-              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.singleplayer")}</Button>
+              <Button onClick={() => navigate('/game')} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.singleplayer")}</Button>
               <Button disabled={searchingGame} onClick={handleChooseMode} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant='' >{t("Home.multiplayer")}</Button>
               {searchingGame && <p className='ms-md-2 mb-2 mb-md-4 fs-5 text-white'>{t("Home.searchingGame")}</p>}
               <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.friends")}</Button>
