@@ -19,10 +19,12 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
   const [showBoard, setshowBoard] = useState(false);
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
   const [showResult, setShowResult] = useState('');
-
+  const [arePiecesDraggable, setArePiecesDraggable] = useState(true);
 
   const gameOver = useCallback((result) => {
     setShowResult(result)
+    setArePiecesDraggable(false)
+
   }, [])
 
   const doMove = useCallback((from, to, promotion) => {
@@ -55,7 +57,7 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
       }
     }
     return move;
-  }, [game])
+  }, [game, gameOver, isPlayerWhite])
 
   const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setKingInCheckSquare, doMove)
 
@@ -65,7 +67,7 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
     chessEngineWorker.onmessage = function (e) {
       const from = Object.keys(e.data)[0]
       const to = e.data[from]
-      doMove(from.toLowerCase(), to.toLowerCase())
+      doMove(from.toLowerCase(), to.toLowerCase(), 'q')
     };
   }, [doMove])
 
@@ -78,12 +80,21 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
 
     if (move) {
       if (move.gameOver !== true)
-        chessEngineWorker.postMessage({ fen: game.fen(), lvl: 0 });
+        chessEngineWorker.postMessage({ fen: game.fen(), lvl: 3 });
       return true;
     }
     return false
   }
 
+  function handlePromotion(p) {
+
+    const move = promote(p)
+    if (move) {
+      if (move.gameOver !== true)
+        chessEngineWorker.postMessage({ fen: game.fen(), lvl: 3 });
+    }
+
+  }
 
   function isDraggablePiece({ piece }) {
     if (isPieceWhite(piece) === isPlayerWhite)
@@ -106,7 +117,7 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
           <div className='boardWrapper'>
             {showBoard && <>
               <GameResult showResult={showResult} setShowResult={setShowResult} />
-              <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={(p) => promote(p)} orientation={boardOrientation().charAt(0)} />
+              <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={handlePromotion} orientation={boardOrientation().charAt(0)} />
               <Chessboard
                 boardWidth={boardWidth}
                 position={game.fen()}
@@ -115,6 +126,8 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
                 onSquareClick={() => cancelPromotion()}
                 onPieceDragBegin={() => cancelPromotion()}
                 customSquareStyles={{ ...kingInCheckSquare }}
+                arePiecesDraggable={arePiecesDraggable}
+
               />
             </>}
           </div>
