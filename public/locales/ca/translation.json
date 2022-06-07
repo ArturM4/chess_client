@@ -66,5 +66,8 @@
     "victory":"Victòria!",
     "defeat":"Derrota...",
     "draw":"Empat"
+  },
+  "ComputerGame":{
+    "newGame":"Nova partida"
   }
 }

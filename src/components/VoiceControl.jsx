@@ -47,10 +47,12 @@ export function VoiceControl({ doMove, yourTurn, voiceControl, setVoiceControl }
   } = useSpeechRecognition({ commands });
 
   useEffect(() => {
-    if (voiceControl && yourTurn)
+    if (voiceControl && yourTurn) {
       SpeechRecognition.startListening({ continuous: true, language: 'es-ES' })
-    else
+    }
+    else {
       SpeechRecognition.stopListening()
+    }
   }, [voiceControl, yourTurn])
 
   if (!browserSupportsSpeechRecognition) {

@@ -66,5 +66,8 @@
     "victory":"Victory!",
     "defeat":"Defeat...",
     "draw":"Draw"
+  },
+  "ComputerGame":{
+    "newGame":"New game"
   }
 }

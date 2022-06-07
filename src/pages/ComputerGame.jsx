@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
 import React, { useCallback, useEffect, useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import { Chessboard } from 'react-chessboard';
 import { useResponsiveBoard } from '../hooks/useResponsiveBoard';
 import { getPieceFromPosition, isPieceWhite } from '../utils/chessUtils';
@@ -8,24 +8,37 @@ import { VoiceControl } from '../components/VoiceControl';
 import GameResult from '../components/GameResult';
 import { Promotion } from '../components/Promotion';
 import { usePromotion } from '../hooks/usePromotion';
+import { useTranslation } from 'react-i18next';
 
 const chessEngineWorker = new Worker(new URL('../chessEngine/chessEngineWorker', import.meta.url));
 
 export function ComputerGame({ voiceControl, setVoiceControl }) {
   const [game, setGame] = useState(new Chess());
 
-  const [isPlayerWhite, setIsPlayerWhite] = useState(true);
+  const [isPlayerWhite] = useState(true);
   const { boardWidth } = useResponsiveBoard()
   const [showBoard, setshowBoard] = useState(false);
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
   const [showResult, setShowResult] = useState('');
   const [arePiecesDraggable, setArePiecesDraggable] = useState(true);
+  const [level] = useState(0);
+
+  const { t } = useTranslation()
+
 
   const gameOver = useCallback((result) => {
     setShowResult(result)
     setArePiecesDraggable(false)
 
   }, [])
+
+  function restartGame() {
+    setShowResult('')
+    setArePiecesDraggable(true)
+    setKingInCheckSquare({})
+    setGame(new Chess())
+    checkPromotion()
+  }
 
   const doMove = useCallback((from, to, promotion) => {
     const gameCopy = { ...game };
@@ -67,9 +80,15 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
     chessEngineWorker.onmessage = function (e) {
       const from = Object.keys(e.data)[0]
       const to = e.data[from]
-      doMove(from.toLowerCase(), to.toLowerCase(), 'q')
+      if (voiceControl)
+        setTimeout(() => {
+          doMove(from.toLowerCase(), to.toLowerCase(), 'q')
+        }, 350)
+      else
+        doMove(from.toLowerCase(), to.toLowerCase(), 'q')
+
     };
-  }, [doMove])
+  }, [doMove, voiceControl])
 
 
   function onPieceDrop(from, to) {
@@ -80,7 +99,7 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
 
     if (move) {
       if (move.gameOver !== true)
-        chessEngineWorker.postMessage({ fen: game.fen(), lvl: 3 });
+        chessEngineWorker.postMessage({ fen: game.fen(), lvl: level });
       return true;
     }
     return false
@@ -91,7 +110,7 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
     const move = promote(p)
     if (move) {
       if (move.gameOver !== true)
-        chessEngineWorker.postMessage({ fen: game.fen(), lvl: 3 });
+        chessEngineWorker.postMessage({ fen: game.fen(), lvl: level });
     }
 
   }
@@ -135,6 +154,7 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
         <Col xs={12} md={3} xl={2} className='align-self-center'>
           {showBoard && <>
             <VoiceControl doMove={onPieceDrop} yourTurn={game.turn() === 'w' === isPlayerWhite} voiceControl={voiceControl} setVoiceControl={setVoiceControl} />
+            <Button className='mt-4' onClick={restartGame}>{t('ComputerGame.newGame')}</Button>
           </>}
         </Col>
       </Row>
