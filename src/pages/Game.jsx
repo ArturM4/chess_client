@@ -12,7 +12,7 @@ import GameResult from '../components/GameResult';
 import { useClock } from '../hooks/useClock';
 import { VoiceControl } from '../components/VoiceControl';
 
-export function Game({ voiceControl, setVoiceControl }) {
+export function Game({ user, voiceControl, setVoiceControl }) {
   const gameId = useParams().id
 
   const [isPlayerWhite, setIsPlayerWhite] = useState(true);
@@ -26,7 +26,9 @@ export function Game({ voiceControl, setVoiceControl }) {
   const gameOver = useCallback((result) => {
     setArePiecesDraggable(false)
     setShowResult(result)
-  }, [])
+    if (user)
+      socket.emit('gameEnded', gameId, result, user.info.id)
+  }, [gameId, user])
 
   const { yourTimer, opponentTimer, yourTime, opponentTime, getYourCurrentTime, setTime, stopAllTimers } = useClock(gameOver)
 

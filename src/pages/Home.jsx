@@ -10,13 +10,14 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 
-export function Home({ voiceControl, setVoiceControl }) {
+export function Home({ user, voiceControl, setVoiceControl }) {
   const [searchingGame, setSearchingGame] = useState(false);
   const [showBoard, setshowBoard] = useState(false);
   const [chooseModeModal, setChooseModeModal] = useState(false);
 
   const [game, setGame] = useState(new Chess());
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
+  const [searchingRanked, setSearchingRanked] = useState(false);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -56,7 +57,11 @@ export function Home({ voiceControl, setVoiceControl }) {
   function handleSearchGame(mode) {
     setChooseModeModal(false)
     setSearchingGame(true)
-    socket.emit('searchGame', mode)
+    let rank = 'casual'
+    if (searchingRanked)
+      rank = 'ranked'
+    socket.emit('searchGame', mode, rank)
+
   }
 
   return (
@@ -68,7 +73,7 @@ export function Home({ voiceControl, setVoiceControl }) {
               <Button onClick={() => navigate('/game')} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.singleplayer")}</Button>
               <Button disabled={searchingGame} onClick={handleChooseMode} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant='' >{t("Home.multiplayer")}</Button>
               {searchingGame && <p className='ms-md-2 mb-2 mb-md-4 fs-5 text-white'>{t("Home.searchingGame")}</p>}
-              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.friends")}</Button>
+              <Button onClick={() => navigate('/ranking')} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Ranking</Button>
               <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.changeStyles")}</Button>
             </Stack>
             <VoiceControl doMove={doMove} yourTurn={true} voiceControl={voiceControl} setVoiceControl={setVoiceControl} />
@@ -85,6 +90,12 @@ export function Home({ voiceControl, setVoiceControl }) {
           <Modal.Title>{t("Home.chooseMode")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {user &&
+            <div>
+              <Button active={searchingRanked} onClick={() => setSearchingRanked(true)} size='lg' className='me-2 mb-4 py-3' variant="outline-secondary">Ranked</Button>
+              <Button active={!searchingRanked} onClick={() => setSearchingRanked(false)} size='lg' className='mb-4 py-3' variant="outline-secondary">Casual</Button>
+            </div>}
+
           <Button onClick={() => handleSearchGame('bullet')} size='lg' className='me-2 mb-2 py-3' >Bullet (1min)</Button>
           <Button onClick={() => handleSearchGame('blitz')} size='lg' className='me-2 mb-2 py-3' >Blitz (3min)</Button>
           <Button onClick={() => handleSearchGame('rapid')} size='lg' className='me-2 mb-2 py-3' >Rapid (10min)</Button>
