@@ -17,6 +17,7 @@ export function Home({ voiceControl, setVoiceControl }) {
 
   const [game, setGame] = useState(new Chess());
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
+  const [searchingRanked, setSearchingRanked] = useState(false);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -56,7 +57,11 @@ export function Home({ voiceControl, setVoiceControl }) {
   function handleSearchGame(mode) {
     setChooseModeModal(false)
     setSearchingGame(true)
-    socket.emit('searchGame', mode)
+    let rank = 'casual'
+    if (searchingRanked)
+      rank = 'ranked'
+    socket.emit('searchGame', mode, rank)
+
   }
 
   return (
@@ -85,6 +90,11 @@ export function Home({ voiceControl, setVoiceControl }) {
           <Modal.Title>{t("Home.chooseMode")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <div>
+            <Button active={searchingRanked} onClick={() => setSearchingRanked(true)} size='lg' className='me-2 mb-4 py-3' variant="outline-secondary">Ranked</Button>
+            <Button active={!searchingRanked} onClick={() => setSearchingRanked(false)} size='lg' className='mb-4 py-3' variant="outline-secondary">Casual</Button>
+          </div>
+
           <Button onClick={() => handleSearchGame('bullet')} size='lg' className='me-2 mb-2 py-3' >Bullet (1min)</Button>
           <Button onClick={() => handleSearchGame('blitz')} size='lg' className='me-2 mb-2 py-3' >Blitz (3min)</Button>
           <Button onClick={() => handleSearchGame('rapid')} size='lg' className='me-2 mb-2 py-3' >Rapid (10min)</Button>

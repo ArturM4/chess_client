@@ -47,7 +47,7 @@ function App() {
       <CustomNav user={user} setUser={setUser} notifications={notifications} setNotifications={setNotifications} />
       <Routes>
         <Route path="/" element={<Home voiceControl={voiceControl} setVoiceControl={setVoiceControl} />} />
-        <Route path="/game/:id" element={<GameWrapper voiceControl={voiceControl} setVoiceControl={setVoiceControl} />} />
+        <Route path="/game/:id" element={<GameWrapper user={user} voiceControl={voiceControl} setVoiceControl={setVoiceControl} />} />
         <Route path="/game/" element={<ComputerGame voiceControl={voiceControl} setVoiceControl={setVoiceControl} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/register" element={<Register setUser={setUser} />} />
