@@ -60,7 +60,7 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
         <Navbar.Collapse id="responsive-navbar-nav" >
           <Nav className="me-auto">
             {user && <Nav.Link onClick={handleNav('friends')}>{t("CustomNav.friends")}</Nav.Link>}
-            <Nav.Link onClick={handleNav('ranking')}>{t("CustomNav.ranking")}</Nav.Link>
+            <Nav.Link onClick={handleNav('ranking')}>Ranking</Nav.Link>
           </Nav>
           <Nav>
             <NavDropdown disabled={!notifications.length > 0} title={'🔔' + notifications.length}>
