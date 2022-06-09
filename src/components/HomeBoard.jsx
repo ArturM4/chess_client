@@ -31,7 +31,7 @@ export function HomeBoard({ props }) {
     <>
       <div className='boardWrapper'>
 
-        <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={promote} orientation={'w'} />
+        <Promotion isPromoting={isPromoting} getPromotionRow={getPromotionRow} turn={game.turn()} handlePromotion={promote} orientation={'w'} pieces={user?.info?.config?.pieces} />
         <Chessboard
           boardWidth={boardWidth}
           position={game.fen()}
