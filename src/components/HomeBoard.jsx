@@ -6,8 +6,10 @@ import { Promotion } from './Promotion';
 
 export function HomeBoard({ props }) {
 
-  const { game, doMove, setKingInCheckSquare, kingInCheckSquare } = props
+  const { game, doMove, setKingInCheckSquare, kingInCheckSquare, user } = props
   const { boardWidth } = useResponsiveBoard()
+
+  const { customPieces, customDarkSquareStyle, customLightSquareStyle } = useCustomBoard(user?.info?.config?.pieces, user?.info?.config?.board)
 
 
 
@@ -23,7 +25,6 @@ export function HomeBoard({ props }) {
   }
 
 
-  const { customPieces } = useCustomBoard()
 
 
   return (
@@ -38,6 +39,8 @@ export function HomeBoard({ props }) {
           onSquareClick={() => cancelPromotion()}
           onPieceDragBegin={() => cancelPromotion()}
           customSquareStyles={{ ...kingInCheckSquare }}
+          customDarkSquareStyle={customDarkSquareStyle()}
+          customLightSquareStyle={customLightSquareStyle()}
           customPieces={customPieces()}
         />
       </div>

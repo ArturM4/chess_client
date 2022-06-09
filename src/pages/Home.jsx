@@ -80,7 +80,7 @@ export function Home({ user, voiceControl, setVoiceControl }) {
           </Col>
           <Col className="mt-3 mt-md-0" xs={12} md={9}>
             {showBoard &&
-              <HomeBoard props={{ game, doMove, setKingInCheckSquare, kingInCheckSquare }} />}
+              <HomeBoard props={{ game, doMove, setKingInCheckSquare, kingInCheckSquare, user }} />}
           </Col>
         </Row>
       </Container>
