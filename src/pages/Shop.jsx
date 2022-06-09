@@ -4,6 +4,7 @@ import { Chessboard } from 'react-chessboard'
 import { ShopItem } from '../components/ShopItem'
 import { useCustomBoard } from '../hooks/useCustomBoard'
 import { useResponsiveBoard } from '../hooks/useResponsiveBoard'
+import { getUser } from '../services/users'
 
 export function Shop({ user, setUser }) {
 
@@ -17,6 +18,17 @@ export function Shop({ user, setUser }) {
   useEffect(() => {
     setshowBoard(true)
   }, [])
+
+  useEffect(() => {
+    if (user)
+      getUser(user.info.id).then((result) => {
+        setUser((prev) => {
+          let updated = { ...prev }
+          prev.info.coins = result.coins
+          return updated
+        })
+      })
+  }, [setUser])
 
   return (
     <Container className='p-4 mt-5' >
