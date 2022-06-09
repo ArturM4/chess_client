@@ -11,6 +11,7 @@ import { Promotion } from '../components/Promotion';
 import GameResult from '../components/GameResult';
 import { useClock } from '../hooks/useClock';
 import { VoiceControl } from '../components/VoiceControl';
+import { useCustomBoard } from '../hooks/useCustomBoard';
 
 export function Game({ user, voiceControl, setVoiceControl }) {
   const gameId = useParams().id
@@ -31,6 +32,7 @@ export function Game({ user, voiceControl, setVoiceControl }) {
   }, [gameId, user])
 
   const { yourTimer, opponentTimer, yourTime, opponentTime, getYourCurrentTime, setTime, stopAllTimers } = useClock(gameOver)
+  const { customPieces, customDarkSquareStyle, customLightSquareStyle } = useCustomBoard(user?.info?.config?.pieces, user?.info?.config?.board)
 
 
   const doMove = useCallback((from, to, promotion) => {
@@ -194,6 +196,9 @@ export function Game({ user, voiceControl, setVoiceControl }) {
                 onPieceDragBegin={() => cancelPromotion()}
                 customSquareStyles={{ ...kingInCheckSquare }}
                 arePiecesDraggable={arePiecesDraggable}
+                customDarkSquareStyle={customDarkSquareStyle()}
+                customLightSquareStyle={customLightSquareStyle()}
+                customPieces={customPieces()}
               />
             </>}
           </div>

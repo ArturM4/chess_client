@@ -74,13 +74,13 @@ export function Home({ user, voiceControl, setVoiceControl }) {
               <Button disabled={searchingGame} onClick={handleChooseMode} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant='' >{t("Home.multiplayer")}</Button>
               {searchingGame && <p className='ms-md-2 mb-2 mb-md-4 fs-5 text-white'>{t("Home.searchingGame")}</p>}
               <Button onClick={() => navigate('/ranking')} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>Ranking</Button>
-              <Button size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.changeStyles")}</Button>
+              <Button onClick={() => navigate('/shop')} size='lg' className='c-386ecf ms-md-2 py-3 mb-2 mb-md-4' variant=''>{t("Home.shop")}</Button>
             </Stack>
             <VoiceControl doMove={doMove} yourTurn={true} voiceControl={voiceControl} setVoiceControl={setVoiceControl} />
           </Col>
           <Col className="mt-3 mt-md-0" xs={12} md={9}>
             {showBoard &&
-              <HomeBoard props={{ game, doMove, setKingInCheckSquare, kingInCheckSquare }} />}
+              <HomeBoard props={{ game, doMove, setKingInCheckSquare, kingInCheckSquare, user }} />}
           </Col>
         </Row>
       </Container>

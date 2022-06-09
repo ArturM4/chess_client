@@ -3,7 +3,7 @@
     "singleplayer": "Singleplayer",
     "multiplayer": "Multiplayer",
     "friends": "Friends",
-    "changeStyles": "Change styles",
+    "shop": "Shop",
     "searchingGame": "Searching game...",
     "chooseMode": "Choose the game mode"
   },
@@ -69,5 +69,11 @@
   },
   "ComputerGame":{
     "newGame":"New game"
+  },
+  "Shop":{
+    "noCoins":"Not enough coins",
+    "try":"Try",
+    "equip": "Equip",
+    "buy":"Purchase"
   }
 }

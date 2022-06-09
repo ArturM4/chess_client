@@ -9,10 +9,11 @@ import GameResult from '../components/GameResult';
 import { Promotion } from '../components/Promotion';
 import { usePromotion } from '../hooks/usePromotion';
 import { useTranslation } from 'react-i18next';
+import { useCustomBoard } from '../hooks/useCustomBoard';
 
 const chessEngineWorker = new Worker(new URL('../chessEngine/chessEngineWorker', import.meta.url));
 
-export function ComputerGame({ voiceControl, setVoiceControl }) {
+export function ComputerGame({ user, voiceControl, setVoiceControl }) {
   const [game, setGame] = useState(new Chess());
 
   const [isPlayerWhite] = useState(true);
@@ -24,6 +25,7 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
   const [level] = useState(0);
 
   const { t } = useTranslation()
+  const { customPieces, customDarkSquareStyle, customLightSquareStyle } = useCustomBoard(user?.info?.config?.pieces, user?.info?.config?.board)
 
 
   const gameOver = useCallback((result) => {
@@ -146,6 +148,9 @@ export function ComputerGame({ voiceControl, setVoiceControl }) {
                 onPieceDragBegin={() => cancelPromotion()}
                 customSquareStyles={{ ...kingInCheckSquare }}
                 arePiecesDraggable={arePiecesDraggable}
+                customDarkSquareStyle={customDarkSquareStyle()}
+                customLightSquareStyle={customLightSquareStyle()}
+                customPieces={customPieces()}
 
               />
             </>}

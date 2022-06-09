@@ -12,6 +12,11 @@ export const acceptFriend = async info => {
   return res.data
 }
 
+export const purchaseItem = async (id, item) => {
+  const res = await axios.post(url + '/' + id + '/purchase/' + item)
+  return res.data
+}
+
 export const getUser = async (id) => {
   const res = await axios.get(url + '/' + id)
   return res.data

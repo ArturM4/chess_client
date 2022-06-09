@@ -3,7 +3,7 @@
     "singleplayer": "Un jugador",
     "multiplayer": "Multijugador",
     "friends": "Amics",
-    "changeStyles": "Canviar estils",
+    "shop": "Botiga",
     "searchingGame": "Buscant partida...",
     "chooseMode": "Tria el mode de joc"
   },
@@ -69,5 +69,11 @@
   },
   "ComputerGame":{
     "newGame":"Nova partida"
+  },
+  "Shop":{
+    "noCoins":"Et falten monedes",
+    "try":"Provar",
+    "equip": "Equipar",
+    "buy":"Comprar"
   }
 }
