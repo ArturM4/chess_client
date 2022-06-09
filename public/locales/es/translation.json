@@ -69,5 +69,11 @@
   },
   "ComputerGame":{
     "newGame":"Nueva partida"
+  },
+  "Shop":{
+    "noCoins":"Te faltan monedas",
+    "try":"Probar",
+    "equip": "Equipar",
+    "buy":"Comprar"
   }
 }

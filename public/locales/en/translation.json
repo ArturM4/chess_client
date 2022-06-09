@@ -69,5 +69,11 @@
   },
   "ComputerGame":{
     "newGame":"New game"
+  },
+  "Shop":{
+    "noCoins":"Not enough coins",
+    "try":"Try",
+    "equip": "Equip",
+    "buy":"Purchase"
   }
 }

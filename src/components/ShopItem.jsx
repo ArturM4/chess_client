@@ -39,7 +39,7 @@ export function ShopItem({ name, isPiece, setItem, user, setUser }) {
     } catch (error) {
       console.log(error)
       if (error?.response?.data?.error === 'insufficient coins')
-        alert('no tens suficients coins')
+        alert(t("Shop.noCoins"))
       else
         alert(t("Login.errors.GeneralError"))
     }
@@ -50,12 +50,12 @@ export function ShopItem({ name, isPiece, setItem, user, setUser }) {
       <Card.Img variant="top" src={require('../assets/' + name + (isPiece ? '/sampleR.png' : '.png'))} />
       <Card.Body>
         {name === 'standard' || user?.info?.itemsPurchased.includes(name)
-          ? <Button onClick={equip} size='sm' className='mb-2' variant="success">Equipar</Button>
+          ? <Button onClick={equip} size='sm' className='mb-2' variant="success">{t("Shop.equip")}</Button>
           : <>
             <Card.Title>100💰</Card.Title>
-            {user && <Button onClick={purchase} size='sm' className='mb-2' variant="warning">Comprar</Button>}
+            {user && <Button onClick={purchase} size='sm' className='mb-sm-2' variant="warning">{t("Shop.buy")}</Button>}
 
-            <Button size='sm' onClick={handleTry} variant="secondary">Provar</Button>
+            <Button size='sm' onClick={handleTry} variant="secondary">{t("Shop.try")}</Button>
           </>
         }
 
