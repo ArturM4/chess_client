@@ -2,7 +2,7 @@
 export function useCustomBoard(set, board) {
   const pieces = ['wP', 'wN', 'wB', 'wR', 'wQ', 'wK', 'bP', 'bN', 'bB', 'bR', 'bQ', 'bK'];
   const customPieces = () => {
-    if (set === '' || set === undefined)
+    if (set === 'standard' || set === undefined)
       return;
     const returnPieces = {};
     pieces.forEach((p) => {
@@ -21,14 +21,14 @@ export function useCustomBoard(set, board) {
   };
 
   const customDarkSquareStyle = () => {
-    if (board === '' || board === undefined)
+    if (board === 'standard' || board === undefined)
       return;
     if (board === 'classic')
       return { backgroundColor: '#979797' }
   }
 
   const customLightSquareStyle = () => {
-    if (board === '' || board === undefined)
+    if (board === 'standard' || board === undefined)
       return;
     if (board === 'classic')
       return { backgroundColor: '#fff' }
