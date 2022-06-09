@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
 import React, { useCallback, useEffect, useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import { Chessboard } from 'react-chessboard';
 import { useParams } from 'react-router-dom';
 import { usePromotion } from '../hooks/usePromotion';
@@ -12,6 +12,7 @@ import GameResult from '../components/GameResult';
 import { useClock } from '../hooks/useClock';
 import { VoiceControl } from '../components/VoiceControl';
 import { useCustomBoard } from '../hooks/useCustomBoard';
+import { t } from 'i18next';
 
 export function Game({ user, voiceControl, setVoiceControl }) {
   const gameId = useParams().id
@@ -23,6 +24,9 @@ export function Game({ user, voiceControl, setVoiceControl }) {
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
   const { boardWidth } = useResponsiveBoard()
   const [showBoard, setshowBoard] = useState(false);
+  const [modeInfo, setModeInfo] = useState({});
+  const [searchingGame, setSearchingGame] = useState(false);
+
 
   const gameOver = useCallback((result) => {
     setArePiecesDraggable(false)
@@ -75,12 +79,18 @@ export function Game({ user, voiceControl, setVoiceControl }) {
   }, [gameId]);
 
   useEffect(() => {
+    return () => {
+      socket.emit('cancelSearch')
+    }
+  }, []);
 
-    socket.on("gameInit", (isWhite, mode) => {
+  useEffect(() => {
+
+    socket.on("gameInit", (isWhite, mode, ranked) => {
       setIsPlayerWhite(isWhite)
       setshowBoard(true)
       setTime(getTimeFromMode(mode))
-
+      setModeInfo({ mode, ranked })
       if (isWhite)
         yourTimer.start()
       else
@@ -174,7 +184,11 @@ export function Game({ user, voiceControl, setVoiceControl }) {
       + Math.floor(time % 1000 / 100)
   }
 
-
+  function searchNewGame() {
+    const { mode, ranked } = modeInfo
+    setSearchingGame(true)
+    socket.emit('searchGame', mode, ranked)
+  }
 
   return (
     <Container className='mt-5'>
@@ -207,7 +221,13 @@ export function Game({ user, voiceControl, setVoiceControl }) {
           {showBoard && <>
             <p className='display-3 text-white'>{timeFormated(false)}</p>
             <p className='display-3 text-white'>{timeFormated(true)}</p>
-            <VoiceControl doMove={onPieceDrop} yourTurn={game.turn() === 'w' === isPlayerWhite} voiceControl={voiceControl} setVoiceControl={setVoiceControl} />
+            <VoiceControl doMove={onPieceDrop} yourTurn={game.turn() === 'w' === isPlayerWhite || game.game_over()} voiceControl={voiceControl} setVoiceControl={setVoiceControl} searchNewGame={searchNewGame} searchingGame={searchingGame} />
+            {game.game_over() && <>
+              <Button disabled={searchingGame} className='mt-4' onClick={searchNewGame}>{t('ComputerGame.newGame')}</Button>
+              {searchingGame && <p className='ms-md-2 mb-2 mb-md-4 fs-5 text-white'>{t("Home.searchingGame")}</p>}
+            </>}
+
+
           </>}
         </Col>
       </Row>

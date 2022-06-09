@@ -4,13 +4,20 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
-export function VoiceControl({ doMove, yourTurn, voiceControl, setVoiceControl }) {
+export function VoiceControl({ doMove, yourTurn, voiceControl, setVoiceControl, searchNewGame, searchingGame }) {
 
   const [lastVoiceMSG, setLastVoiceMSG] = useState('')
   const [showVCModal, setShowVCModal] = useState(false)
   const { t } = useTranslation();
 
   const commands = [
+    {
+      command: ["Nueva partida"],
+      callback: (phrase) => {
+        if (!searchingGame)
+          searchNewGame()
+      }
+    },
     {
       command: ["*"],
       callback: (phrase) => {
@@ -22,12 +29,10 @@ export function VoiceControl({ doMove, yourTurn, voiceControl, setVoiceControl }
         let arr = phrase.toLowerCase().split(' ')
         if (arr.length === 2 || arr.length === 3) {
           arr = divideNumbers(arr)
-          console.log('2 o 3', arr)
 
         }
         if (arr.length === 4) {
 
-          console.log('4', arr)
           if (isNaN(arr[1]))
             if (numbersInSpanish[arr[1]])
               arr[1] = numbersInSpanish[arr[1]]
