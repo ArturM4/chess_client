@@ -37,16 +37,16 @@ export function Shop({ user, setUser }) {
         <Col xs={12} lg={6}>
           {user && <p className='display-6 text-white'>{user.info.coins}💰</p>}
           <Row>
-            <Col xs={3} ><ShopItem name={'standard'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
-            <Col xs={3}><ShopItem name={'normal1'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
-            <Col xs={3}><ShopItem name={'basic1'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
-            <Col xs={3}><ShopItem name={'standard'} isPiece={false} setItem={setBoard} user={user} setUser={setUser} /></Col>
+            <Col xs={6} sm={3}><ShopItem name={'standard'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
+            <Col xs={6} sm={3}><ShopItem name={'normal1'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
+            <Col xs={6} sm={3}><ShopItem name={'basic1'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
+            <Col xs={6} sm={3}><ShopItem name={'standard'} isPiece={false} setItem={setBoard} user={user} setUser={setUser} /></Col>
           </Row>
           <Row>
-            <Col xs={3} ><ShopItem name={'normal2'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
-            <Col xs={3}><ShopItem name={'basic2'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
-            <Col xs={3}><ShopItem name={'normal4'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
-            <Col xs={3}><ShopItem name={'classic'} isPiece={false} setItem={setBoard} user={user} setUser={setUser} /></Col>
+            <Col xs={6} sm={3} ><ShopItem name={'normal2'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
+            <Col xs={6} sm={3}><ShopItem name={'basic2'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
+            <Col xs={6} sm={3}><ShopItem name={'normal4'} isPiece={true} setItem={setSet} user={user} setUser={setUser} /></Col>
+            <Col xs={6} sm={3}><ShopItem name={'classic'} isPiece={false} setItem={setBoard} user={user} setUser={setUser} /></Col>
           </Row>
         </Col>
         <Col className="mt-3 mt-md-0" xs={12} lg={6}>
