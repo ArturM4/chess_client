@@ -1,4 +1,5 @@
 import { Chessboard } from 'react-chessboard';
+import { useCustomBoard } from '../hooks/useCustomBoard';
 import { usePromotion } from '../hooks/usePromotion';
 import { useResponsiveBoard } from '../hooks/useResponsiveBoard';
 import { Promotion } from './Promotion';
@@ -22,6 +23,9 @@ export function HomeBoard({ props }) {
   }
 
 
+  const { customPieces } = useCustomBoard()
+
+
   return (
     <>
       <div className='boardWrapper'>
@@ -34,6 +38,7 @@ export function HomeBoard({ props }) {
           onSquareClick={() => cancelPromotion()}
           onPieceDragBegin={() => cancelPromotion()}
           customSquareStyles={{ ...kingInCheckSquare }}
+          customPieces={customPieces()}
         />
       </div>
 

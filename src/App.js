@@ -10,6 +10,7 @@ import socket from './socket/socket';
 import { GameWrapper } from './pages/GameWrapper';
 import { ComputerGame } from './pages/ComputerGame';
 import { Ranking } from './pages/Ranking';
+import { Shop } from './pages/Shop';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -53,6 +54,7 @@ function App() {
         <Route path="/register" element={<Register setUser={setUser} />} />
         <Route path="/friends" element={<Friends user={user} />} />
         <Route path="/ranking" element={<Ranking user={user} />} />
+        <Route path="/shop" element={<Shop user={user} />} />
       </Routes>
     </>
   );
