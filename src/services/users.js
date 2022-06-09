@@ -1,6 +1,11 @@
 import axios from 'axios'
 
 const url = "/api/users"
+let token = null
+
+export const setToken = newToken => {
+  token = `Bearer ${newToken}`
+}
 
 export const register = async info => {
   const res = await axios.post(url, info)
@@ -8,12 +13,22 @@ export const register = async info => {
 }
 
 export const acceptFriend = async info => {
-  const res = await axios.post(url + '/friends', info)
+  const config = {
+    headers: {
+      Authorization: token
+    }
+  }
+  const res = await axios.post(url + '/friends', info, config)
   return res.data
 }
 
 export const purchaseItem = async (id, item) => {
-  const res = await axios.post(url + '/' + id + '/purchase/' + item)
+  const config = {
+    headers: {
+      Authorization: token
+    }
+  }
+  const res = await axios.post(url + '/' + id + '/purchase/' + item, null, config)
   return res.data
 }
 
