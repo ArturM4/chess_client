@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { login } from '../services/login';
-import { register } from '../services/users';
+import { register, setToken } from '../services/users';
 import socket from '../socket/socket';
 
 export function Register({ setUser }) {
@@ -23,6 +23,7 @@ export function Register({ setUser }) {
     try {
       await register({ username, password })
       const user = await login({ username, password })
+      setToken(user.token)
       socket.emit("userLogged", user.info.id)
       setUser(user)
       navigate('/')

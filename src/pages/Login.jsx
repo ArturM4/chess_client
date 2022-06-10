@@ -5,6 +5,7 @@ import { login } from '../services/login';
 import { ErrorMessage } from '../components/ErrorMessage';
 import socket from '../socket/socket';
 import { useTranslation } from 'react-i18next';
+import { setToken } from '../services/users';
 
 
 export function Login({ setUser }) {
@@ -22,6 +23,7 @@ export function Login({ setUser }) {
 
     try {
       const user = await login({ username, password })
+      setToken(user.token)
       socket.emit("userLogged", user.info.id)
       setUser(user)
       navigate('/')
