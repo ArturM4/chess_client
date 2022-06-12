@@ -22,7 +22,7 @@ export function ComputerGame({ user, voiceControl, setVoiceControl }) {
   const [kingInCheckSquare, setKingInCheckSquare] = useState({});
   const [showResult, setShowResult] = useState('');
   const [arePiecesDraggable, setArePiecesDraggable] = useState(true);
-  const [level] = useState(0);
+  const [level] = useState(2);
 
   const { t } = useTranslation()
   const { customPieces, customDarkSquareStyle, customLightSquareStyle } = useCustomBoard(user?.info?.config?.pieces, user?.info?.config?.board)
