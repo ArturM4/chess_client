@@ -1,10 +1,10 @@
 
 import i18next from 'i18next';
-import React from 'react'
-import { Button, Container, Dropdown, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import React, { useState } from 'react'
+import { Button, Container, Dropdown, Modal, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
-import { acceptFriend } from '../services/users';
+import { acceptFriend, deleteUser } from '../services/users';
 import socket from '../socket/socket';
 
 export function CustomNav({ user, setUser, notifications, setNotifications }) {
@@ -12,6 +12,7 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const [showConfirmDeleteAccount, setShowConfirmDeleteAccount] = useState(false);
 
 
   const handleNav = (path) => () => {
@@ -25,6 +26,16 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
     socket.emit("userLogout", user.info.id)
     setUser(null)
     navigate('/')
+  }
+  const deleteAccount = async () => {
+    try {
+      await deleteUser(user.info.id)
+      setShowConfirmDeleteAccount(false)
+      handleLogout()
+    } catch (error) {
+      console.log(error)
+    }
+
   }
 
   const acceptFriendRequest = async (index, noti) => {
@@ -53,67 +64,83 @@ export function CustomNav({ user, setUser, notifications, setNotifications }) {
   }
 
   return (
-    <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-      <Container>
-        <Navbar.Brand style={{ cursor: 'pointer' }} onClick={handleNav('/')}>AirChess</Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav" >
-          <Nav className="me-auto">
-            {user && <Nav.Link onClick={handleNav('friends')}>{t("CustomNav.friends")}</Nav.Link>}
-            <Nav.Link onClick={handleNav('ranking')}>Ranking</Nav.Link>
-          </Nav>
-          <Nav>
-            <NavDropdown disabled={!notifications.length > 0} title={'🔔' + notifications.length}>
-              {notifications.length === 0 &&
-                <NavDropdown.ItemText>
-                  <div>{t("CustomNav.noNotifications")}</div>
-                </NavDropdown.ItemText>}
-              {notifications.map((noti, i) => {
-                return (
-                  <div key={i}>
-                    <NavDropdown.Divider />
-                    <NavDropdown.ItemText>
-                      {noti.type === 'friendRequest'
-                        ? <div>{noti.senderUsername} {t("CustomNav.friendRequest")}</div>
-                        : <div>{noti.senderUsername} {t("CustomNav.friendChallenge")}</div>
-                      }
-                      <Button onClick={() => acceptFriendRequest(i, noti)} variant="success">{t("CustomNav.accept")}</Button>{' '}
-                      <Button onClick={() => declineFriendRequest(i)} variant="danger">{t("CustomNav.cancel")}</Button>
-                    </NavDropdown.ItemText>
-                  </div>
-                )
-              })}
-              <div className='text-white'>________________________________________</div>
-            </NavDropdown>
+    <>
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Container>
+          <Navbar.Brand style={{ cursor: 'pointer' }} onClick={handleNav('/')}>AirChess</Navbar.Brand>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav" >
+            <Nav className="me-auto">
+              {user && <Nav.Link onClick={handleNav('friends')}>{t("CustomNav.friends")}</Nav.Link>}
+              <Nav.Link onClick={handleNav('ranking')}>Ranking</Nav.Link>
+            </Nav>
+            <Nav>
+              <NavDropdown disabled={!notifications.length > 0} title={'🔔' + notifications.length}>
+                {notifications.length === 0 &&
+                  <NavDropdown.ItemText>
+                    <div>{t("CustomNav.noNotifications")}</div>
+                  </NavDropdown.ItemText>}
+                {notifications.map((noti, i) => {
+                  return (
+                    <div key={i}>
+                      <NavDropdown.Divider />
+                      <NavDropdown.ItemText>
+                        {noti.type === 'friendRequest'
+                          ? <div>{noti.senderUsername} {t("CustomNav.friendRequest")}</div>
+                          : <div>{noti.senderUsername} {t("CustomNav.friendChallenge")}</div>
+                        }
+                        <Button onClick={() => acceptFriendRequest(i, noti)} variant="success">{t("CustomNav.accept")}</Button>{' '}
+                        <Button onClick={() => declineFriendRequest(i)} variant="danger">{t("CustomNav.cancel")}</Button>
+                      </NavDropdown.ItemText>
+                    </div>
+                  )
+                })}
+                <div className='text-white'>________________________________________</div>
+              </NavDropdown>
 
-            <NavDropdown title='⚙️' >
-              <Dropdown>
-                <Dropdown.Toggle variant="light" className='w-100 text-start'>
-                  {t("CustomNav.language")}
-                </Dropdown.Toggle>
+              <NavDropdown title='⚙️' >
+                <Dropdown>
+                  <Dropdown.Toggle variant="light" className='w-100 text-start'>
+                    {t("CustomNav.language")}
+                  </Dropdown.Toggle>
 
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => changeLanguage('en')}>English</Dropdown.Item>
-                  <Dropdown.Item onClick={() => changeLanguage('ca')}>Català</Dropdown.Item>
-                  <Dropdown.Item onClick={() => changeLanguage('es')}>Castellano</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </NavDropdown>
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => changeLanguage('en')}>English</Dropdown.Item>
+                    <Dropdown.Item onClick={() => changeLanguage('ca')}>Català</Dropdown.Item>
+                    <Dropdown.Item onClick={() => changeLanguage('es')}>Castellano</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
 
-            {!user
-              ? <>
-                <Nav.Link onClick={handleNav('login')}>{t("CustomNav.login")}</Nav.Link>
-                <Nav.Link onClick={handleNav('register')}>{t("CustomNav.register")}</Nav.Link>
-              </>
-              : <>
-                <Nav.Link onClick={handleLogout}>{t("CustomNav.logout")}</Nav.Link>
-                <Navbar.Text> {user.info.username}</Navbar.Text>
-              </>
-            }
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar >
+                {user && <NavDropdown.Item onClick={() => { setShowConfirmDeleteAccount(true) }}>{t("CustomNav.deleteAccount")}</NavDropdown.Item>}
+
+              </NavDropdown>
+
+              {!user
+                ? <>
+                  <Nav.Link onClick={handleNav('login')}>{t("CustomNav.login")}</Nav.Link>
+                  <Nav.Link onClick={handleNav('register')}>{t("CustomNav.register")}</Nav.Link>
+                </>
+                : <>
+                  <Nav.Link onClick={handleLogout}>{t("CustomNav.logout")}</Nav.Link>
+                  <Navbar.Text> {user.info.username}</Navbar.Text>
+                </>
+              }
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar >
+
+      <Modal show={showConfirmDeleteAccount} onHide={() => setShowConfirmDeleteAccount(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t("CustomNav.confirmDeleteAccount")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Button variant="danger" onClick={deleteAccount}>{t("CustomNav.delete")}</Button>
+        </Modal.Body>
+        <Modal.Footer>
+        </Modal.Footer>
+      </Modal>
+    </>
   )
 }
 

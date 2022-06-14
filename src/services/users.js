@@ -46,3 +46,13 @@ export const getAllUsersSorted = async (populated) => {
   const res = await axios.get(url + '/sorted')
   return res.data
 }
+
+export const deleteUser = async (id) => {
+  const config = {
+    headers: {
+      Authorization: token
+    }
+  }
+  const res = await axios.delete(url + '/' + id, config)
+  return res.data
+}

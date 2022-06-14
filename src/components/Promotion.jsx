@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Image } from 'react-bootstrap'
+import { Image } from 'react-bootstrap'
 
 export function Promotion({ isPromoting, getPromotionRow, turn, handlePromotion, orientation, pieces }) {
   if (pieces === undefined)

@@ -75,7 +75,7 @@ export function ComputerGame({ user, voiceControl, setVoiceControl }) {
       }
     }
     return move;
-  }, [game, gameOver, isPlayerWhite])
+  }, [game, gameOver, isPlayerWhite, voiceControl])
 
   const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setKingInCheckSquare, doMove)
 

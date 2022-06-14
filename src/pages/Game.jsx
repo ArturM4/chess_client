@@ -73,7 +73,7 @@ export function Game({ user, voiceControl, setVoiceControl }) {
       }
     }
     return move;
-  }, [game, isPlayerWhite, gameOver, stopAllTimers])
+  }, [game, isPlayerWhite, gameOver, stopAllTimers, voiceControl])
 
   const { checkPromotion, promote, isPromoting, getPromotionRow, cancelPromotion } = usePromotion(game, setKingInCheckSquare, doMove)
 

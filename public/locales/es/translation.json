@@ -40,7 +40,10 @@
     "friendChallenge":"te ha desafiado",
     "accept":"Aceptar",
     "cancel":"Cancelar",
-    "language":"Idioma"
+    "language":"Idioma",
+    "deleteAccount":"Eliminar la cuenta",
+    "confirmDeleteAccount":"¿Seguro que quieres eliminar la cuenta?",
+    "delete":"Eliminar"
   },
   "Login":{
     "username":"Nombre de usuario",

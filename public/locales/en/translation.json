@@ -40,7 +40,10 @@
     "friendChallenge":"has challenged you",
     "accept":"Accept",
     "cancel":"Cancel",
-    "language":"Language"
+    "language":"Language",
+    "deleteAccount":"Delete account",
+    "confirmDeleteAccount":"Are you sure you want to delete the account?",
+    "delete":"Delete"
   },
   "Login":{
     "username":"Username",
