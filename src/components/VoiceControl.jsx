@@ -46,6 +46,7 @@ export function VoiceControl({ doMove, yourTurn, voiceControl, setVoiceControl, 
     },
   ];
 
+
   const {
     listening,
     browserSupportsSpeechRecognition

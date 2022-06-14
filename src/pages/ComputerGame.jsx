@@ -10,6 +10,7 @@ import { Promotion } from '../components/Promotion';
 import { usePromotion } from '../hooks/usePromotion';
 import { useTranslation } from 'react-i18next';
 import { useCustomBoard } from '../hooks/useCustomBoard';
+import { speak } from '../utils/speak';
 
 const chessEngineWorker = new Worker(new URL('../chessEngine/chessEngineWorker', import.meta.url));
 
@@ -46,6 +47,8 @@ export function ComputerGame({ user, voiceControl, setVoiceControl }) {
     const gameCopy = { ...game };
     const move = gameCopy.move({ from, to, promotion });
     if (move) {
+      if (voiceControl)
+        speak(`${from} ${to}`)
       setGame(gameCopy);
 
       if (gameCopy.in_check())

@@ -13,6 +13,7 @@ import { useClock } from '../hooks/useClock';
 import { VoiceControl } from '../components/VoiceControl';
 import { useCustomBoard } from '../hooks/useCustomBoard';
 import { t } from 'i18next';
+import { speak } from '../utils/speak';
 
 export function Game({ user, voiceControl, setVoiceControl }) {
   const gameId = useParams().id
@@ -43,6 +44,8 @@ export function Game({ user, voiceControl, setVoiceControl }) {
     const gameCopy = { ...game };
     const move = gameCopy.move({ from, to, promotion });
     if (move) {
+      if (voiceControl)
+        speak(`${from} ${to}`)
       setGame(gameCopy);
 
       if (gameCopy.in_check())
